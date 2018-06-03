@@ -1,0 +1,27 @@
+{
+  "name": "psoftv3",
+  "version": "3.0.0",
+  "description": "NWA Fantasy app, reborn with FIFA World Cup 2018",
+  "main": "psoftsvc_v3.js",
+  "scripts": {
+    "start": "nodemon psoftsvc_v3.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grv2k8/Predictsoft-v3"
+  },
+  "keywords": [
+    "nana",
+    "nofapp",
+    "psoft_v3"
+  ],
+  "author": "gjoshi(ever3stmomo@gmail.com), KB (neod0nat0r)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grv2k8/Predictsoft-v3/issues"
+  },
+  "homepage": "https://github.com/grv2k8/Predictsoft-v3#readme",
+  "dependencies": {
+  }
+}
