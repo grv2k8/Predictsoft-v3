@@ -45,13 +45,7 @@ var auth = {
                 
                 //populate user data
                 responseObject.success = true;
-                responseObject.data = {
-                    ID:     userResponseObject.userID,
-                    email:  userResponseObject.email,
-                    name:   userResponseObject.name,
-                    token:  userResponseObject.auth_key,
-                    points: userResponseObject.points
-                };
+                responseObject.data = genToken(userResponseObject.dataValues);
                 
                 res.status(200).json(responseObject);
                 res.end();
@@ -72,29 +66,35 @@ var auth = {
         
     },
     /* validates /v1/* route access and returns user object if successful */
-    validateAccess: function(user_token){
-        var user = {};
-
+    validateAccess: function(user_email){
         return new Promise(function (resolve, reject) {
             
-            //TODO: validate token against DB
-
-            user = {
-                uId     : '123',
-                admin   : (1 ==='1'),
-                fullName: 'PK Girpade'
-            };
-            resolve(user);
-            return;
+            db.User.find({
+                where: {
+                    email   : user_email
+                }
+            })
+            .then(function(userObject)
+            {
+              resolve(userObject);
+              return;  
+            })
+            .catch(function(error){
+                reject(error);
+                return;
+            });
         });
     }
 };
 
 /* Generate a token that expires in 24 hours */
-function genToken(userAuthKey) {
+function genToken(userObject) {
     var expires = expiresIn(1); // 1 day
+    console.log(">>>",userObject);
     var token = jwt.encode({
-        key     : userObject.userAuthKey,
+        email   : userObject.email,
+        name    : userObject.name,
+        points  : userObject.points,
         exp     : expires
     }, jwtConfig());
 

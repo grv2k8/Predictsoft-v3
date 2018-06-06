@@ -27,33 +27,35 @@ module.exports = function(req, res, next) {
         catch(jwtErr){
             res.status(401)
                 .json({
+                    success  : false,
                     "message": jwtErr.message
                 });
             res.end();
             return;
         }
        try {
-            //expired token?
             if (decoded.exp <= Date.now()) {
                 res.status(400)
                     .json({
-                        "message": "Token Expired"
+                        success     : false,
+                        "message"   : "Token Expired"
                     });
                 res.end();
                 return;
             }
             // Authorize the user to see if s/he can access our resources
-            validateUser(decoded.key)      // decoded.key is userid for this user
-                .then(function(userObj){
-                    if (userObj) {
-                        if ((req.url.indexOf('admin') >= 0 && userObj.admin) || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/v1/') >= 0)) {
+            validateUser(decoded.email)
+                .then(function(userResponseObject){
+                    if (userResponseObject) {
+                        if ((req.url.indexOf('admin') >= 0 && userResponseObject.admin) || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/v1/') >= 0)) {
                             //inject user info into the request for valid requests
-                            req.tfUser = userObj;
+                            req.tfUser = userResponseObject;
                             next();                         // To move to next middleware
 
                         } else {
                             res.status(403)
                                 .json({
+                                    success : false,
                                     "message": "Not Authorized"
                                 });
                             return;
@@ -62,6 +64,7 @@ module.exports = function(req, res, next) {
                         // No user with this name exists, respond back with a 401
                         res.status(401)
                             .json({
+                                success : false,
                                 "message": "Invalid User"
                             });
                         res.end();
@@ -71,6 +74,7 @@ module.exports = function(req, res, next) {
                 .catch(function(err){
                     res.status(500)
                         .json({
+                            success : false,
                             "message": err.message
                         });
                     res.end();
@@ -79,6 +83,7 @@ module.exports = function(req, res, next) {
         } catch (err) {
             res.status(500)
                 .json({
+                    success : false,
                     "message": err.message
                 });
             res.end();

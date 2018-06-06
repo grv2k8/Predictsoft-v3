@@ -89,7 +89,55 @@ var TFUsers = {
 
     /* GET /review by :id */
     getUserDetails: function (req, res) {
-        
+        var responseObject = {};
+        //if(!req.body || !req.body.id || util.isEmptyObject(req.body.id)){
+        if(!req.params.id || util.isEmptyObject(req.params.id)){
+            responseObject = {
+                success : false,
+                message : 'Missing user id'
+            }
+            res.status(400).json(responseObject);
+            res.end();
+            return;
+        }
+
+        db.User.find({
+            where: {
+                userID   : req.params.id    
+            }
+        })
+        .then(function(userResponseObject){
+            if(util.isEmptyObject(userResponseObject)){
+                responseObject = {
+                    success : false,
+                    message : 'User not found'
+                }
+            }
+            else{
+                responseObject = {
+                    success : true,
+                    data : {
+                        name    : userResponseObject.name,
+                        email   : userResponseObject.email,
+                        points  : userResponseObject.points
+                    }
+                }
+            }
+            console.log(userResponseObject);
+            res.status(200).json(responseObject);
+            res.end();
+            return;
+        })
+        .catch(function(err){
+            log.warn('Error trying to fetch user account details for id :',req.params.id,". Details:\r\n",err);
+            responseObject = {
+                success : false,
+                message : "Error trying to get user details"
+            }
+            res.status(500).json(responseObject);
+            res.end();
+            return;
+        })
     }
 }
 

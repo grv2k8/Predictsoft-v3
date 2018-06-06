@@ -17,6 +17,7 @@ var TFMatch = require('./games');
  */
 router.get('/ping',TFUtils.ping);
 router.get('/temp',TFMatch.fetchNextMatch);
+router.get('/user/:id',TFUsers.getUserDetails);
 
 router.post('/login', auth.login);
 router.post('/register', TFUsers.addUser);                      // Register new user
