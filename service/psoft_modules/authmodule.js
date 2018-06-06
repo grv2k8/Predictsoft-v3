@@ -8,37 +8,35 @@ const jwtConfig = require('../config/jwtkey.js');
 
 const util = require('./utils');
 const log = util.Log;
+const db = util.Database;
 const config = util.Config;
 
 var auth = {
     login: function(req, res) {
 
         var responseObject = {};
-        var userEmail = req.body.email || '';
-        var userPassword = req.body.password || '';
-
-        if (userEmail === '' || userPassword === '') {
-            res.status(401)
-                .json({"message": "Invalid credentials."});
+        if (util.isEmptyString(req.body.email) || util.isEmptyString(req.body.password)) {
+            responseObject = {
+                success : false,
+                message : "Invalid  or missing credentials."
+            }
+            res.status(401).json(responseObject);
             res.end();
             return;
         }
 
-        var authResponseObject = {};
-
-        Users.find({
+        db.User.find({
             where: {
-                email   : userEmail,
-                password: userPassword
+                email   : req.body.email,
+                password: req.body.password
             }
         })
-        .then(function (userObj) {
+        .then(function (userResponseObject) {
                 
-                if (util.isEmptyObject(userObj)) {
-                    //throw "User not found. Please check email/password and try again";
+                if (util.isEmptyObject(userResponseObject)) {
                     responseObject = {
                         success : false,
-                        message : "User not found. Please check email/password and try again."
+                        message : "User account not found. Please check email/password and try again."
                     }
                     res.status(401).json(responseObject);
                     res.end();
@@ -46,24 +44,26 @@ var auth = {
                 }
                 
                 //populate user data
-                authResponseObject.success = true;
-                authResponseObject.data = {
-                    ID:     userObj.userID,
-                    email:  userObj.email,
-                    name:   userObj.name,
-                    token:  userObj.auth_key,
-                    points: userObj.points
+                responseObject.success = true;
+                responseObject.data = {
+                    ID:     userResponseObject.userID,
+                    email:  userResponseObject.email,
+                    name:   userResponseObject.name,
+                    token:  userResponseObject.auth_key,
+                    points: userResponseObject.points
                 };
                 
-                res.status(200).json(authResponseObject);
+                res.status(200).json(responseObject);
                 res.end();
                 return;
             })
         .catch(function (err) {
                 //user find failed
-                utils.logMe("Error trying to fetch user with email " + req.body.email + ". Details: " + err);
-                responseObject.success = false;
-                responseObject.message = "Could not find user account";
+                log.warn("Error trying to fetch user with email " + req.body.email + ". Details: " + err);
+                responseObject = {
+                    success : false,
+                    message : "Could not find user account"
+                }
                 
                 res.status(400).json(responseObject);
                 res.end();
