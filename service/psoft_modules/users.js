@@ -5,6 +5,7 @@
 
 const util = require('./utils');
 const log = util.Log;
+const db = util.Database;
 const config = util.Config;
 
 var TFUsers = {
@@ -24,7 +25,7 @@ var TFUsers = {
             return;
         }
         
-        if(!req.body || !req.body.username || !req.body.password){
+        if(!req.body || !req.body.name || !req.body.password || !req.body.email){
             responseObject = {
                 success : false,
                 message : "Please enter all required fields"
@@ -34,16 +35,51 @@ var TFUsers = {
             return;
         }
 
-
-        //TODO: START HEREEEEE
-
-        /* //check if email ID already exists
-        Users.find({
+        //check if email ID already exists
+        util.Database.User.find({
             where: {
                 email: req.body.email,
             }
-        }).then(function (usrObj) {
-        }); */
+        }).then(function (userExistsResponse) {
+            if(!util.isEmptyObject(userExistsResponse))
+            {
+                responseObject = {
+                    success : false,
+                    message : "That email address has already been registered."
+                };
+                res.status(400).json(responseObject);
+                res.end();
+                return null;        //this return is for next then block
+            }
+
+            return db.User
+            .build({
+                name    : req.body.name,
+                email   : req.body.email,
+                password: req.body.password,
+                auth_key: req.body.token,
+                points  : 0
+            })
+            .save();
+        })
+        .then(function(registrationResponseObject){
+            if(!util.isEmptyObject(registrationResponseObject)){
+                log.info("New user account has been successfully added with email: ",req.body.email);    
+                responseObject = {
+                        success : true,
+                        message : "Successfully registered account"
+                    };
+                res.status(200).json(responseObject);
+                res.end();
+                return;
+            }
+        })
+        .catch(function(error){
+            log.warn('Error trying to register user account with email ',req.body.email,'.Details:\r\n',error);
+            res.status(400).json();
+            res.end();
+            return;
+        })
     },
     
     /* Update user details */

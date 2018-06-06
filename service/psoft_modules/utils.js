@@ -110,7 +110,6 @@ var Utils = module.exports = {
             return new Promise(function(resolve,reject){
                 Utils.Database.User.count()
                 .then(c => {
-                    console.log(">>>",c);
                     resolve(c);
                 })
                 .catch(e => {
@@ -118,6 +117,22 @@ var Utils = module.exports = {
                     reject(e);
                 })                
             });
+        },
+        checkIfEmailIsRegistered: function(user_email){
+            return new Promise(function(resolved,reject){
+                Utils.Database.User.find({
+                    where: {
+                        email: user_email,
+                    }
+                })
+                .then(c => {
+                    resolve(c);
+                })
+                .catch(e => {
+                    Utils.Log.error('Error trying to check if user email has been registered. Details: ',e);
+                    reject(e);
+                })
+            })
         }
     },    
     ping: function (req, res) {

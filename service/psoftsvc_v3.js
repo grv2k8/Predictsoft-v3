@@ -53,6 +53,13 @@ app.use(function(req, res, next) {
 
 app.listen(config.psAppPort);
 log.info(config.getAppSignature()+'[Running as '+config.psRunMode+' environment]');
+if(config.psIsRegistrationActive == true){
+    log.info('Registration is active.');
+}
+else{
+    log.warn('Registration period has expired');
+}
+
 if(config.psLogLevel === 'Verbose'){
     config.getUserCount()
     .then(function(numberOfUsers){
