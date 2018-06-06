@@ -16,6 +16,7 @@ var TFMatch = require('./games');
  * Routes that can be accessed by any one
  */
 router.get('/ping',TFUtils.ping);
+router.get('/temp',TFMatch.fetchNextMatch);
 
 router.post('/login', auth.login);
 router.post('/register', TFUsers.addUser);                      // Register new user

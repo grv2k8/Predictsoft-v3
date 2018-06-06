@@ -13,6 +13,7 @@ const config = util.Config;
 var auth = {
     login: function(req, res) {
 
+        var responseObject = {};
         var userEmail = req.body.email || '';
         var userPassword = req.body.password || '';
 
@@ -34,7 +35,14 @@ var auth = {
         .then(function (userObj) {
                 
                 if (util.isEmptyObject(userObj)) {
-                    throw "User not found. Please check email/password and try again";
+                    //throw "User not found. Please check email/password and try again";
+                    responseObject = {
+                        success : false,
+                        message : "User not found. Please check email/password and try again."
+                    }
+                    res.status(401).json(responseObject);
+                    res.end();
+                    return;
                 }
                 
                 //populate user data
@@ -47,17 +55,17 @@ var auth = {
                     points: userObj.points
                 };
                 
-                res.json(authResponseObject);
+                res.status(200).json(authResponseObject);
                 res.end();
                 return;
             })
         .catch(function (err) {
                 //user find failed
                 utils.logMe("Error trying to fetch user with email " + req.body.email + ". Details: " + err);
-                resObj.success = false;
-                resObj.message = err;
+                responseObject.success = false;
+                responseObject.message = "Could not find user account";
                 
-                res.json(resObj);
+                res.status(400).json(responseObject);
                 res.end();
                 return;
             });
