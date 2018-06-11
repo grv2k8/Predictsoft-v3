@@ -6,7 +6,13 @@ module.exports = function(sequelize, DataTypes) {
   return sequelize.define(
     'team', 
     {
-      teamID: {type: DataTypes.INTEGER, primaryKey: true},
+      ID: {type: DataTypes.INTEGER, primaryKey: true},
       Name:   {type: DataTypes.INTEGER, primaryKey: true}
-    });
+    },
+    {
+    // don't add the timestamp attributes (updatedAt, createdAt)
+      timestamps: false
+    // other configuration here    
+    }
+  );
 }

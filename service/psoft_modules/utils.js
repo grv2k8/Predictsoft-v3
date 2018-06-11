@@ -15,7 +15,7 @@ var Utils = module.exports = {
     Database: {
         DBConnection: null,
         Game        : null,
-        User        : null,
+        Team        : null,
         Prediction  : null,
         User        :  null,
         loadModels  : function(dbconnect){
@@ -23,8 +23,13 @@ var Utils = module.exports = {
             this.User = dbconnect.import(__dirname + '/../models/user');
             this.Team = dbconnect.import(__dirname + '/../models/team');
             this.Prediction = dbconnect.import(__dirname + '/../models/prediction');
+
+            this.Game.hasMany(this.Team, {foreignKey: 'ID'});
+            this.Team.belongsTo(this.Game,{foreignKey: 'ID', as: 'Team1iD', targetKey: 'ID'});
+            //this.Team.belongsTo(this.Game,{foreignKey: 'Team2', as: 'Team2ID'});
         },
         query: function(queryString,queryType){
+            //DANGER: validate that this.DBCOnnection has been initialized before this step!
             return this.DBConnection.query(queryString,{type: queryType});
         }
     },
@@ -82,7 +87,8 @@ var Utils = module.exports = {
                     {
                         host: dbConfig.host,
                         dialect: 'mysql',
-                        logging: false,
+                        logging: true,
+                        timestamps: false,
                         define: {
                             //freezeTableName: true          //so table names won't be assumed pluralized by the ORM
                         },

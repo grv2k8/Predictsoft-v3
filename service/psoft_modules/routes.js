@@ -7,27 +7,28 @@ var express = require('express');
 var router = express.Router();
 
 var auth = require('./authmodule');
-var TFUtils = require('./utils');
-var TFUsers = require('./users');
-var TFMatch = require('./games');
+var PSUtils = require('./utils');
+var PSUsers = require('./users');
+var PSMatch = require('./games');
 
 
 /*
  * Routes that can be accessed by any one
  */
-router.get('/ping',TFUtils.ping);
-router.get('/temp',TFMatch.fetchNextMatch);
-router.get('/user/:id',TFUsers.getUserDetails);
+router.get('/ping',PSUtils.ping);
+router.get('/temp');
+router.get('/user/:id',PSUsers.getUserDetails);
 
 router.post('/login', auth.login);
-router.post('/register', TFUsers.addUser);                      // Register new user
+router.post('/register', PSUsers.addUser);                      // Register new user
 
 /*
  * Routes that can be accessed only by authenticated users
  */
-router.get('/v1/auth/ping',TFUtils.ping);
+router.get('/v1/auth/ping',PSUtils.ping);
 
 //game/match route
-router.get('/v1/match/next');
+router.get('/v1/games/active',PSMatch.fetchActiveMatches);          //get all active (upcoming) matches
+router.get('/v1/game/:id',PSMatch.fetchMatchDetails);               //get details of a match
 
 module.exports = router;

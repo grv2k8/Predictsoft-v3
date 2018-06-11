@@ -7,8 +7,15 @@ module.exports = function(sequelize, DataTypes) {
     'games',
     {
         ID          : {type: DataTypes.INTEGER, primaryKey: true},
-        Team1       : DataTypes.INTEGER,
-        Team2       : DataTypes.INTEGER,
+        Team1       : {
+            type: DataTypes.UUID,
+            allowNull: false
+          },
+        //Team1       : DataTypes.INTEGER,
+        Team2       : {
+            type: DataTypes.UUID,
+            allowNull: false
+          },
         isActive    : DataTypes.INTEGER,
         isHidden    : DataTypes.INTEGER,
         isLocked    : DataTypes.INTEGER,	  
