@@ -5,8 +5,8 @@
                 Forked off of NoFApp v1 built for Twenty 20 Cricket 2016
  */
 
-var express = require('express');
-var cors = require('cors');
+const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -18,10 +18,14 @@ config.init();
 var log = util.Log;
 
 const app_routes = require('./psoft_modules/routes');
-
+console.log(__dirname);
+app.use(express.static(__dirname));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+//default route (to be replaced by angular 2/5 in the future)
+app.use("/", express.static(__dirname + '/web/index.html'));
 
 app.all("/*",function (req,res,next) {
     // CORS headers

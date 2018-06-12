@@ -15,6 +15,7 @@ var auth = {
     login: function(req, res) {
 
         var responseObject = {};
+        console.log(req.body);
         if (util.isEmptyString(req.body.email) || util.isEmptyString(req.body.password)) {
             responseObject = {
                 success : false,
@@ -25,6 +26,7 @@ var auth = {
             return;
         }
 
+        
         db.User.find({
             where: {
                 email   : req.body.email,

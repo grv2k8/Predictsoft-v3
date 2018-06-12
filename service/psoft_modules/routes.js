@@ -11,7 +11,6 @@ var PSUtils = require('./utils');
 var PSUsers = require('./users');
 var PSMatch = require('./games');
 
-
 /*
  * Routes that can be accessed by any one
  */
