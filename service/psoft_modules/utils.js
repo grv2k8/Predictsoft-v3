@@ -121,7 +121,6 @@ var Utils = module.exports = {
                 
                 //finally, load queries from external file
                 Utils.Database.QueryList = require('../config/query_list');
-                Utils.Log.info("##",Utils.Database.QueryList.getMatchDetails(2));
             }
             catch (e) {
                 console.error('Error trying to parse one or more config file(s). Details: \r\n', e);

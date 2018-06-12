@@ -18,7 +18,6 @@ config.init();
 var log = util.Log;
 
 const app_routes = require('./psoft_modules/routes');
-console.log(__dirname);
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

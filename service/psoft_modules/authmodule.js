@@ -49,7 +49,7 @@ var auth = {
                 delete responseObject.user_data.password;
                 delete responseObject.user_data.createdAt;
                 delete responseObject.user_data.updatedAt;
-                console.log("@@",responseObject);
+                responseObject.user_data.first_name = responseObject.user_data.name.split(" ")[0] || 'Baazigar';
                 res.status(200).json(responseObject);
                 res.end();
                 return;
@@ -61,7 +61,6 @@ var auth = {
                     success : false,
                     message : "Could not find user account"
                 }
-                
                 res.status(400).json(responseObject);
                 res.end();
                 return;
@@ -93,7 +92,6 @@ var auth = {
 /* Generate a token that expires in 24 hours */
 function genToken(userObject) {
     var expires = expiresIn(1); // 1 day
-    console.log(">>>",userObject);
     var token = jwt.encode({
         email   : userObject.email,
         name    : userObject.name,
