@@ -13,72 +13,35 @@ var TFGames = {
     //GET details about all upcoming matches
     fetchActiveMatches : function(req,res){
         var _response = {};
-        _response.games = [];
+        //_response.games = [];
         database.query(
             queries.getUpcomingMatchDetails(),
             database.DBConnection.QueryTypes.SELECT
         )
         .then(gamesResponseObject=>{
-            res.status(200).json({
+            _response = {
                 success         : true,
+                message         : "OK",
                 number_of_games : gamesResponseObject.length,
                 match_date      : gamesResponseObject[0].GameDate,
-                results         : gamesResponseObject
-            });
-            res.end();
-            return;
-        })
-        /* .then(function(gamesList){
-            console.log(gamesList);
-            _response.games = gamesList.dataValues;
-            _response.number_of_games = gamesList.length;
-            res.status(200).json({
-                success: true,
-                number_of_games: gamesList.length,
-                data: gamesList
-            });
-            res.end();
-            return;
-        }) */
-        .catch(function(error){
-            log.error('TFGames:fetchActiveMatches() - Cannot fetch upcoming games. Details: ',error);
-            res.status(500).json({
-                success: false,
-                message: 'The request could not be completed. The mods will be notified.'
-            });
-            res.end();
-            return;
-        })
-    },
-    //GET all upcoming matches
-    fetchActiveMatchesOLD : function(req,res){
-        var _response = {};
-        _response.games = [];
-        database.Game.findAll({
-            where: {
-                isActive: 1
+                results         : gamesResponseObject 
             }
-        })
-        .then(gamesResponseObject=>{
-            res.status(200).json({
-                success         : true,
-                number_of_games : gamesResponseObject.length,
-                results         : gamesResponseObject
-            });
+            res.status(200).json(_response);
             res.end();
             return;
         })
         .catch(function(error){
             log.error('TFGames:fetchActiveMatches() - Cannot fetch upcoming games. Details: ',error);
-            res.status(500).json({
+            _response = {
                 success: false,
                 message: 'The request could not be completed. The mods will be notified.'
-            });
+            }
+            res.status(500).json(_response);
             res.end();
             return;
         })
     },
-
+    
     //GET details of one match
     fetchMatchDetails : function(req,res){
         database.query(
@@ -104,7 +67,118 @@ var TFGames = {
         });
         
         
+    },
+
+    /* POST prediction(s) for a user */
+    addOrUpdatePredictions : function(req,res){
+        var _response = {};
+        var addPredictionPromiseList = [];
+        if(util.isEmptyObject(req.body) || util.isEmptyObject(req.body.predictionData)){
+            log.warn('Error trying to add prediction: Invalid request received ( '+ ((req.body)||'Undefined') + ')');
+            _response = {
+                success : false,
+                message : "The prediction could not be added/updated at this time. Please try after some time"
+            }
+            res.status(500).json(_response);
+            res.end();
+            return;
+        }
+        var predictionList = req.body.predictionData;
+        predictionList.forEach(element => {
+            addPredictionPromiseList.push(addOrUpdatePrediction(req.psoftUser.ID, req.psoftUser.name, element.matchID, element.teamID, element.teamName));
+        });
+
+        return Promise.all(addPredictionPromiseList)
+        .then(predictionResponseList =>{
+             _response = {
+                success         : true,
+                message         : "OK",
+                results         : predictionResponseList
+            }
+            res.status(200).json(predictionResponseList);
+            res.end();
+            return;
+        })
+
+        .catch(error=>{
+            log.error('TFGames:addOrUpdatePredictions() - Cannot submit prediction. Details: ',error);
+            _response = {
+                success : false,
+                data    : error,
+                message : 'The request could not be completed. The mods will be notified.'
+            }
+            res.status(500).json(_response);
+            res.end();
+            return;
+        });
     }
 }
+
+var addOrUpdatePrediction = function(userID, userName, matchID, predictedTeamID, predictedTeamName)
+{
+    return new Promise(function(resolve,reject){
+
+        //check if match is valid (not locked yet)
+        return database.Game.find({
+            where: {
+                ID: matchID,
+                isLocked: 0
+            }
+        })
+        .then(lockedCheckResult =>{
+            if(util.isEmptyObject(lockedCheckResult))
+            {
+                //locked match 
+                log.warn("User " + userName + " has submitted a prediction for match ID " + matchID + " after the lockdown period and has been denied access to do so (tried to insert/update team: " + predictedTeamName + ") ");
+                resolve({
+                    //match_id            : matchID,
+                    post_lock_attempt   : true,
+                    message             : "Your predicted team '" + predictedTeamName + "' could not be submitted because the prediction window has closed"
+                });
+                return;                
+            }
+            else{
+                return database.Prediction
+                .findOrCreate
+                ({
+                    where: {playerID: userID, matchID: matchID},
+                    defaults: {predictedTeamID: predictedTeamID}
+                })
+                 .spread((predictionRowResult,created)=>{
+                    if(created){
+                        log.info("New prediction has been added for user ID ",userID," (",userName,"), for match ID ",matchID," (Team: ",predictedTeamName,")");
+                        resolve({
+                            matchID : matchID,
+                            player  : userName,
+                            Team    : predictedTeamName
+                        });
+                        return;
+                    }
+                    else{
+                        //prediction exists, update it
+                        var predictionRow = (predictionRowResult && predictionRowResult.dataValues) || {playerID: userID, matchID: matchID};
+                        database.query(
+                            queries.updatePredictionForMatch(predictionRow.playerID,predictionRow.matchID,predictedTeamID),
+                            {model: database.Prediction}
+                        ).then(predictionResult=>{
+                            log.info("Prediction for user ID ",userID," (",userName,") has been updated for match ID ",matchID," (Team: ",predictedTeamName,")");
+                            resolve({
+                                matchID : matchID,
+                                player  : userName,
+                                Team    : predictedTeamName
+                            });
+                            return;
+                        })
+                    }
+                })
+            }
+        })
+        .catch(err =>{
+            log.warn('Could not add/update prediction for user ID: ',userID,' for match ',matchID,'.\r\nDetails: ',err);
+            reject(err);
+        })
+      });
+}
+
 
 module.exports = TFGames;

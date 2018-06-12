@@ -48,10 +48,13 @@ module.exports = function(req, res, next) {
                 .then(function(userResponseObject){
                     if (userResponseObject) {
                         if ((req.url.indexOf('admin') >= 0 && userResponseObject.admin) || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/v1/') >= 0)) {
-                            //inject user info into the request for valid requests
-                            req.tfUser = userResponseObject;
+                            //inject user info into the request that should be available for all /api/v1 request paths
+                            req.psoftUser = {
+                                ID          : userResponseObject.dataValues.userID,
+                                name        : userResponseObject.dataValues.name,
+                                admin       : (userResponseObject.dataValues.isr00t===1)?true:false
+                            };
                             next();                         // To move to next middleware
-
                         } else {
                             res.status(403)
                                 .json({

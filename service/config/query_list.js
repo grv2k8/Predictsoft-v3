@@ -18,11 +18,19 @@ module.exports = {
                         "WHERE games.ID=" + matchID;
     },
     getUpcomingMatchDetails: function(){
-        return "SELECT T1.ID as Team1ID, T1.Name as Team1Name, T1.FlagUrl as Team1LogoUrl, " +
+        return "SELECT G.ID as MatchID, T1.ID as Team1ID, T1.Name as Team1Name, T1.FlagUrl as Team1LogoUrl, " +
                     "T2.ID as Team2ID, T2.Name as Team2Name, T2.FlagUrl as Team2LogoUrl, " +
                     "G.points as GamePoints, G.gameType as GameType, G.isLocked as IsGameLocked, G.isHidden as IsGameHidden, G.matchDate as GameDate, G.matchTime as GameTime " +
                 "FROM teams T1, teams T2, games G " +
                 "WHERE G.Team1 = T1.ID and G.Team2 = T2.ID AND G.isActive = 1;"
-    }
+    },
+    addPredictionForMatch: function(userID, matchID, predictedTeamID){
+        return "INSERT INTO predictions(playerID, matchID, predictedTeamID) "+
+        "VALUES ('" + userID + "', '" + matchID +"', '"+ predictedTeamID +"');";
+    },
+    updatePredictionForMatch: function(userID, matchID, predictedTeamID){
+        return "UPDATE predictions "+
+        "SET predictedTeamID='" + predictedTeamID + "' WHERE  playerID=" + userID + " AND matchID=" + matchID + ";"
+    },
 
 };
