@@ -58,13 +58,13 @@ angular.module("psoftUI").service("userService", function ($http){
     
     this.addUser = function (name, email, password, token) {
         var data = {
-            name: name,
-            email: email,
+            name    : name,
             password: password,
-            token: token
+            email   : email,
+            token   : token
         };
         
-        var promise = $http.post("/api/adduser", data);
+        var promise = $http.post("/api/register", data);
         return promise;
     };
     

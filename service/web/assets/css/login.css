@@ -9,6 +9,29 @@ body {
   padding: 15px;
   margin: 0 auto;
 }
+
+.form-heading{
+  color:#1c3754;
+  padding-bottom: 40px;
+}
+
+.heading-centered{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-remember-me-text{
+  padding:0 0 1rem 1rem;
+  color:#1c3754;
+}
+
+.register-link{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
   margin-bottom: 10px;
@@ -33,8 +56,27 @@ body {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
+
 .form-signin input[type="password"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+.register-frame{
+  background-color: #d4e9ff;
+  margin: 0 40px 0 40px;
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+.login-link{
+   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-controls-box{
+  margin:0 0 20px 110px;
+  width: 100%;
 }

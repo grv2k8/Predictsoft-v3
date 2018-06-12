@@ -134,7 +134,6 @@
 
 
         $scope.redirectToRegister = function () {
-            //console.log("Redirecting to Register page");
             $location.path("/register");
             return;
         };

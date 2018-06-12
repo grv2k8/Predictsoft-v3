@@ -26,7 +26,6 @@ body {
 
 .navbar-brand {
     color:#FFFFFF !important;       /* color of logo text*/
-    
 }
 
 .psoft-title {
@@ -40,7 +39,7 @@ body {
   background-repeat: no-repeat;
  }
 
-body { background-color:#728085  !important; }
+body { background-color:#f2ece3  !important; }
 
 @font-face {
     font-family: 'dusha_plusregular';
