@@ -15,7 +15,6 @@ var auth = {
     login: function(req, res) {
 
         var responseObject = {};
-        console.log(req.body);
         if (util.isEmptyString(req.body.email) || util.isEmptyString(req.body.password)) {
             responseObject = {
                 success : false,
@@ -44,11 +43,13 @@ var auth = {
                     res.end();
                     return;
                 }
-                
-                //populate user data
                 responseObject.success = true;
-                responseObject.data = genToken(userResponseObject.dataValues);
-                
+                responseObject.auth_data = genToken(userResponseObject.dataValues);
+                responseObject.user_data = userResponseObject.dataValues;
+                delete responseObject.user_data.password;
+                delete responseObject.user_data.createdAt;
+                delete responseObject.user_data.updatedAt;
+                console.log("@@",responseObject);
                 res.status(200).json(responseObject);
                 res.end();
                 return;

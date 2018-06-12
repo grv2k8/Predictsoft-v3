@@ -18,7 +18,7 @@
                         <span>{{submitResponseERR}}</span>
                     </div>
                     <div class="col-md-12">
-                        <div class="alert alert-info col-sm-3 col-md-offset-5" style="padding-left: 22px;" ng-show="loadingGames">Loading games...<img src="/assets/img/loading.gif"></div>
+                        <div class="alert alert-info col-sm-3 col-md-offset-5" style="padding-left: 22px;" ng-show="loadingGames">Loading games...<img src="/web/assets/img/loading.gif"></div>
                         <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for available games</span></div>
                         <!--Game list and voting buttons-->
                         <div class="row h3 text-center">Games for {{games[0].date | date:'MMM d, yyyy'}}</div>
@@ -90,7 +90,7 @@
                                     <span class="h5" ng-if="predictionGridLoaded">/ {{getRemainingPlayerCount()}} predictions left </span>
                                 </span>
                             </div>
-                            <div ng-hide="predictionGridLoaded"><span class="h5"><img src="/assets/img/loading.gif" /> Refreshing...</span></div>
+                            <div ng-hide="predictionGridLoaded"><span class="h5"><img src="/web/assets/img/loading.gif" /> Refreshing...</span></div>
                             <div ng-show="predictionGridLoaded" ui-grid="predictionGrid"></div>
                         </div>
                     </div>

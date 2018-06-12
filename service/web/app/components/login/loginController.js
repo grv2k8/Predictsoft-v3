@@ -81,7 +81,7 @@
             $scope.is_waiting = true;
             authService.login($scope.email, md5.createHash($scope.password))
 			.then(function (response) {
-                //console.log("RESPONSE RETURNED:: "+angular.toJson(response,true));
+                console.log("RESPONSE RETURNED:: "+angular.toJson(response.data,true));
                 if (response == null) {
                     throw "There was an error trying to connect to the web service. Please try again later";
                 }
@@ -89,28 +89,24 @@
                 if (!response.data.success) {
                     throw response.data.message;
                 }
+                /* authService.usrObj = {
+                    ID      : response.data.user_data.userID,
+                    name    : response.data.user_data.user,
+                    email   : response.data.user_data.email,
+                    points  : response.data.user_data.points
+                }; */
                 
-                /*authService.usrObj = {
-                    userID: response.data.usrData.userID,
-                    name: response.data.usrData.user,
-                    email: response.data.usrData.email,
-                    token: response.data.usrData.token,
-                    points: response.data.usrData.points
-                };*/
-                authService.usrObj = angular.copy(response.data.usrData);
+                delete response.data.success;
+                console.log(response.data);
+
+                authService.usrObj = angular.copy(response.data);
                 //$scope.user = angular.copy(response.data.usrData);
 
                 if ($scope.savelogin) {
-                    //session persistence
-                    //console.log("This is where the login needs to be saved!");
-                    //window.localStorage['nofapp_session'] = angular.toJson(userService.usrObj);
-                    authService.saveSession();
-                    //console.log("Saved user token to local storage");
+                    authService.saveSession(response.data);
                 }
                 
                 $scope.is_valid = true;
-                //console.log("Set user object to: " + angular.toJson(userService.usrObj, true));
-                //console.log("Login successful, routing to poll page..");
                 $location.path("/poll");
                 return;
             })

@@ -6,26 +6,26 @@
 angular.module("psoftUI").factory('authService', function ($http){
     var session_name = 'nofapp2_session';
     var usrObj = {
-        //userID: '',
-        email: '',
-        name: '',
-        token: '',
-        points: 0
+        ID      : '',
+        email   : '',
+        name    : '',
+        token   : '',
+        points  : 0
     };
 
     usrObj.login = function(email, passwordHash){
-        var data = {
+        var loginData = {
             email: email,
             password: passwordHash
         };
 
-        //return $http.get('/api/ping');
-        return $http.post('/api/login', data);
+        return $http.post('/api/login', loginData);
     };
 
-    usrObj.saveSession = function (){
-        //save current user object in session storage
-        window.localStorage[session_name] = angular.toJson(this.usrObj);
+    usrObj.saveSession = function (psoftData){
+        //save current user object and token in session storage
+        delete psoftData.success;
+        window.localStorage[session_name] = angular.toJson(psoftData);
     };
 
     usrObj.loadSession = function () {
@@ -37,7 +37,6 @@ angular.module("psoftUI").factory('authService', function ($http){
         else
             return false;
     };
-
 
     usrObj.isLoggedIn = function(){
         if(!this.usrObj){
