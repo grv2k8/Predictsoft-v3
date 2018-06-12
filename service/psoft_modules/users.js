@@ -123,7 +123,6 @@ var TFUsers = {
                     }
                 }
             }
-            console.log(userResponseObject);
             res.status(200).json(responseObject);
             res.end();
             return;
