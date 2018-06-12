@@ -1,0 +1,58 @@
+body {
+    padding-top: 50px;
+}
+
+.starter-template {
+	padding: 40px 15px;
+	text-align: center;
+}
+
+.blocks .btn-primary
+{
+	padding: 12px 50px;
+	border-radius: 1px;
+}
+.blocks {border-spacing: 5px;}
+
+.locked-panel {
+    background-color: #e2e8e8;
+}
+
+.navbar-custom {
+    background-color:#394245;
+    color:#000000;
+    border-radius:0;
+}
+
+.navbar-brand {
+    color:#FFFFFF !important;       /* color of logo text*/
+}
+
+.psoft-title {
+    font-family: 'dusha_plusregular', Fallback, sans-serif;
+    font-size: 1.2rem;
+}
+
+.navbar-default {
+  background-color:#0f4583;
+  background-image: none;
+  background-repeat: no-repeat;
+ }
+
+body { background-color:#f2ece3  !important; }
+
+@font-face {
+    font-family: 'dusha_plusregular';
+    src: url('dusha-regular.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'dusha_plusregular';
+    src: url('dusha-regular.woff'); /* IE9 Compat Modes */
+  }
+
+.myGrid {
+/*    width: 350px;
+    height: 340px;
+*/ 
+}

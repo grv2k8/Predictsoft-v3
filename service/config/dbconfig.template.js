@@ -9,5 +9,6 @@ module.exports = {
 	user: 	  'dbuser',
 	password: '*******',
 	database: 'DBNAME',
-	host: 'SERVER'
+	host: 'SERVER',
+	logAll: false
 };
