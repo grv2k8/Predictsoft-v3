@@ -30,7 +30,6 @@
                         $scope.gameHistory = response.data.historyData.slice();
                         $scope.name = authService.getName();
                         $scope.points = authService.getPoints();
-                        //console.log("DONE LOADING>..");
                     }
                 })
                 .catch(function (err) {

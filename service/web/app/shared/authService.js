@@ -49,12 +49,12 @@ angular.module("psoftUI").factory('authService', function ($http){
 
     usrObj.getName = function(){
         if(this.usrObj)
-            return this.usrObj.name;
+            return this.usrObj.user_data.name;
     };
 
     usrObj.getPoints = function(){
         if(this.usrObj)
-            return this.usrObj.points;
+            return this.usrObj.user_data.points;
     };
 
     usrObj.getToken = function () {
@@ -62,7 +62,7 @@ angular.module("psoftUI").factory('authService', function ($http){
             return '';
         }
         else
-            return this.usrObj.token;
+            return this.usrObj.auth_data.token;
     };
 
     usrObj.clearAuth = function(){
