@@ -14,6 +14,7 @@ var Utils = module.exports = {
     Log: null,
     Database: {
         DBConnection: null,
+        QueryList   : null,
         Game        : null,
         Team        : null,
         Prediction  : null,
@@ -30,7 +31,22 @@ var Utils = module.exports = {
         },
         query: function(queryString,queryType){
             //DANGER: validate that this.DBCOnnection has been initialized before this step!
-            return this.DBConnection.query(queryString,{type: queryType});
+            return new Promise(function(resolve,reject){
+                if(Utils.isEmptyObject(Utils.Database.DBConnection)){
+                    Utils.Log.warn('DBConnection was not initialized, so the query cannot be executed');
+                    resolve({});
+                    return;
+                }
+                Utils.Database.DBConnection.query(queryString,{type: queryType})
+                .then(queryResponse =>{
+                    resolve(queryResponse);
+                    return;
+                })
+            })
+            .catch(e=>{
+                reject(e);
+            })
+            
         }
     },
     Config: {
@@ -80,14 +96,14 @@ var Utils = module.exports = {
                 });
 
                 //load Sequelize config and setup DB connection...
-                var sequelizeInit = new Sequelize(
+                Utils.Database.DBConnection = new Sequelize(
                     dbConfig.database,    //Predictsoft DB
                     dbConfig.user,
                     dbConfig.password,
                     {
                         host: dbConfig.host,
                         dialect: 'mysql',
-                        logging: true,
+                        logging: dbConfig.logAll || false,
                         timestamps: false,
                         define: {
                             //freezeTableName: true          //so table names won't be assumed pluralized by the ORM
@@ -100,8 +116,12 @@ var Utils = module.exports = {
                     }
                 );
                 //...then load DB models
-                Utils.Database.loadModels(sequelizeInit);
+                Utils.Database.loadModels(Utils.Database.DBConnection);
                 Utils.Log.info('Utils loaded...');
+                
+                //finally, load queries from external file
+                Utils.Database.QueryList = require('../config/query_list');
+                Utils.Log.info("##",Utils.Database.QueryList.getMatchDetails(2));
             }
             catch (e) {
                 console.error('Error trying to parse one or more config file(s). Details: \r\n', e);

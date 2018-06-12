@@ -7,6 +7,7 @@ const util = require('./utils');
 const log = util.Log;
 const config = util.Config;
 const database = util.Database;
+const queries = database.QueryList;
 
 var TFGames = {
     //GET all upcoming matches
@@ -38,23 +39,19 @@ var TFGames = {
 
     //GET details of one match
     fetchMatchDetails : function(req,res){
-        database.Game.find({
-            include: [
-                database.Team
-                ],
-            where: {
-                ID: req.params.id
-            }
-        })
-        .then(function(gameDetails){
+        database.query(
+            queries.getMatchDetails(req.params.id),
+            database.DBConnection.QueryTypes.SELECT
+        )
+        .then(gameDetails => {
             res.status(200).json({
-                success: true,
-                data: gameDetails
+                success     : true,
+                data        : (gameDetails && gameDetails[0]) || {}
             });
             res.end();
             return;
         })
-        .catch(function(error){
+        .catch(error=>{
             log.error('TFGames:fetchMatchDetails() - Cannot fetch details for game ID ' + req.params.id + '. Details: ',error);
             res.status(500).json({
                 success: false,
@@ -62,7 +59,9 @@ var TFGames = {
             });
             res.end();
             return;
-        })
+        });
+        
+        
     }
 }
 
