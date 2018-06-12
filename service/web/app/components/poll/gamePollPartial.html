@@ -1,7 +1,4 @@
 <div class="container">
-    <h3>Thank you for registering your account with us. Please check back on 6/13 for your first prediction</h1>
-</div>
-<div class="container" style="display: none">
         <div class="well" style="overflow: hidden">
             <div class="row">
                 <!--Teams and poll button DIVs-->
@@ -9,7 +6,7 @@
                     <!-- Poll and Prediction column-->
                     <div class="text-center">
                         <div class="h1">Upcoming games</div>
-                        <div class="h4">(FINALS)</div>
+                        <div class="h4">{{matchType}}</div>
                     </div>
                     <div ng-if="showDateRemaining(matchDateTime)" class="alert alert-warning fade in" ng-show="display_announcement">
                          <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
@@ -24,25 +21,27 @@
                         <div class="alert alert-info col-sm-3 col-md-offset-5" style="padding-left: 22px;" ng-show="loadingGames">Loading games...<img src="/web/assets/img/loading.gif"></div>
                         <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for available games</span></div>
                         <!--Game list and voting buttons-->
-                        <div class="row h3 text-center">Games for {{games[0].date | date:'MMM d, yyyy'}}</div>
-                        <div class="row h5 text-center">(<span class="h4"><strong>15</strong></span> points)</div>
+                        <div class="row h3 text-center" ng-show="matchDate">Games for {{matchDate | date:'MMM d, yyyy'}}</div>
+                        <div class="row h3 text-center" ng-hide="matchDate">Upcoming games</div>
+                        <div class="row h5 text-center">(<span class="h4"><strong>{{matchPoints}}</strong></span> points/game)</div>
+
                         <div class="row" ng-repeat="x in games">
 
                             <div class="row">
                                 <div class="text-center h5 ">
                                     <strong>
                                         <span ng-class="{'text-muted':x.locked}">
-                                            <span ng-bind="(x.date | date:'shortTime') +' '"></span>
-                                            <span ng-if="x.locked" style="color:#ff4d4d;">(LOCKED)</span>
+                                            <span ng-bind="(x.GameTime | date:'shortTime') +' '"></span>
+                                            <span ng-if="x.IsGameLocked" style="color:#ff4d4d;">(LOCKED)</span>
                                         </span>
                                     </strong>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="panel panel-primary">
-                                    <div class="panel-heading"><span ng-class="{'text-danger':x.locked}">{{x.team1Name}}</span></div>
-                                    <div id = 'divMatch{{x.matchID}}_{{x.team1ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID,x.team1ID,x.team1Name,x.team2ID,x.locked)">
-                                        <div class="row"><img ng-src="{{x.team1LogoPath}}" alt="{{x.team1Name}}" style="width:72px;height:42px;" /></div>
+                                    <div class="panel-heading"><span ng-class="{'text-danger':x.IsGameLocked}">{{x.Team1Name}}</span></div>
+                                    <div id = 'divMatch{{x.matchID}}_{{x.Team1ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID,x.Team1ID,x.Team1Name,x.Team2ID,x.locked)">
+                                        <div class="row"><img ng-src="{{x.Team1LogoUrl}}" alt="{{x.Team1Name}}" style="width:72px;height:42px;" /></div>
                                     </div>
                                 </div>
                             </div>
@@ -58,9 +57,9 @@
                             <!--</div>-->
                             <div class="col-sm-6">
                                 <div class="panel panel-primary">
-                                    <div class="panel-heading"><span ng-class="{'text-danger':x.locked}">{{x.team2Name}}</span></div>
-                                    <div id = 'divMatch{{x.matchID}}_{{x.team2ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID, x.team2ID,x.team2Name,x.team1ID,x.locked)">
-                                        <div class="row"><img ng-src="{{x.team2LogoPath}}" alt="{{x.team2Name}}" style="width:72px;height:42px;" /></div>
+                                    <div class="panel-heading"><span ng-class="{'text-danger':x.locked}">{{x.Team2Name}}</span></div>
+                                    <div id = 'divMatch{{x.matchID}}_{{x.Team2ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID, x.Team2ID,x.Team2Name,x.Team1ID,x.locked)">
+                                        <div class="row"><img ng-src="{{x.Team2LogoUrl}}" alt="{{x.Team2Name}}" style="width:72px;height:42px;" /></div>
                                     </div>
                                 </div>
                             </div>

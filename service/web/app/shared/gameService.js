@@ -36,8 +36,8 @@ angular.module("psoftUI").service("gameService", function ($http) {
         return predictionGrid;
     }
 
-    this.getNextGame = function () {
-        var promise = $http.get("/api/nextmatch");
+    this.getNextGame = function (auth_token) {
+        var promise = $http.get("/api/v1/games/active?access_token="+auth_token);
         return promise;
     };
     

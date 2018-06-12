@@ -27,7 +27,11 @@ Controller that handles
 
         $scope.predictionGridLoaded = true;
 
-        $scope.matchDateTime = '';
+        $scope.matchDate = '';
+
+        //$scope.matchDateTime = '';
+        $scope.matchType = '';
+        $scope.matchPoints = 0;
         var now = new Date();
 
         // $scope.lockDown = false;
@@ -107,35 +111,42 @@ Controller that handles
             //getLeaderBoard();			//load score table - moved to scoreboardController.js
             //getPredictionTable();		//load prediction table
             
-            
+            console.log("$$$Using token: ",authService.usrObj.auth_data.token);
             //get list of active games
-           gameService.getNextGame()
-				.then(function (response) {
-                
+            gameService.getNextGame(authService.usrObj.auth_data.token)
+            .then(function (response) {
+                var gamesObject = response.data;
+                console.log(gamesObject);
                 $scope.loadingGames = false;            //hide the "Loading...." animation
-                
-                if (response == null) {
-                    throw "There was an error trying to connect to the web service. Please try again later";
+                if (!response || !gamesObject) {
+                    var noRespErr = "There was an error trying to connect to the web service. Please try again later";
+                    $scope.submitResponseERR = noRespErr;
+                    throw noRespErr;
                 }
-                
-                if (!response.data.success) {
-                    throw response.data.message;
+                if (!gamesObject.success) {
+                    var error = (gamesObject && gamesObject.message) || 'Something went wrong. Please contact the admin';
+                    $scope.submitResponseERR = error;
+                    throw error;
                 }
-
-                //console.log(angular.toJson(response.data, true));
-                
-                if (response.data.count == 0) {
-                    $scope.nogames = true;
+                $scope.nogames = (gamesObject.number_of_games <= 0);
+                console.log("@@",$scope.nogames);
+                if ($scope.nogames) {
+                    //no games marked as isActive=1 on the database
+                    $scope.matchType = '';
                 }
                 else {
-                    $scope.games = response.data.matchData.slice();		//copy games info to scope
-                    $scope.nogames = false;
+                    $scope.games = gamesObject.results.slice();		//copy games info to scope
+                    $scope.matchDate = gamesObject.match_date;
+                    console.log("???",$scope.games);
 
-                    //$scope.remainingPredictions = response.data.rem_predictions;
-                    gameService.setRemainingPredictionCount(response.data.rem_predictions);
+                    //$scope.remainingPredictions = gamesObject.rem_predictions;
+                    gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
 
                     var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
-                    $scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
+                    /////////////////$scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
+                    $scope.matchType = ('('+ $scope.games[0].GameType + ')') || '';
+                    $scope.matchPoints =   $scope.games[0].GamePoints || 0;
+                    console.log("PPP:",$scope.games[0].GameType);
                 }
                 return;
             })
@@ -172,10 +183,10 @@ Controller that handles
                     
                     //console.log(">>"+angular.toJson(response, true));
                     
-                    if (!response.data.success) {
-                        //if(!response.data.message)
-                        $scope.submitResponseERR = response.data.message;
-                        //throw response.data.message;
+                    if (!gamesObject.success) {
+                        //if(!gamesObject.message)
+                        $scope.submitResponseERR = gamesObject.message;
+                        //throw gamesObject.message;
                         return;
                     }
                     
@@ -193,10 +204,10 @@ Controller that handles
                         if (response == null) {
                             throw "There was an error trying to fetch prediction data from the web service. Please try again later";
                         }
-                        if (!response.data.success) { throw response.data.message; }
+                        if (!gamesObject.success) { throw gamesObject.message; }
 
-                        gameService.setRemainingPredictionCount(response.data.rem_predictions);
-                        gameService.fillPredictionGrid(response.data.predictData);      //for dynamic refreshing of prediction grid
+                        gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
+                        gameService.fillPredictionGrid(gamesObject.predictData);      //for dynamic refreshing of prediction grid
                         $scope.predictionGridLoaded = true;
                     })
                 },3000);
