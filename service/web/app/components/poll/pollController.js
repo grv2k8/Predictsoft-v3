@@ -223,8 +223,8 @@ Controller that handles
             });
 
             /*Disable for group of 16 onwards*/
-            if(teamID == 50)
-                return;
+            /*if(teamID == 50)
+                return;*/
 
             if (doAdd) {
                 $scope.selection.push(
@@ -242,11 +242,25 @@ Controller that handles
 
         $scope.div_click = function(matchID, teamID, teamName, otherTeamID, isLocked){
 
+            //for a draw, team1ID vs otherTeamID are not selected/cleared
+            //also, teamName never lie   \o/
             if(!isLocked) {
+                if(teamName === "Draw"){
+                    //draw
+                    angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#f2ece3');
+                    angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#f2ece3');
+                    angular.element(document.querySelector('#divMatch' + matchID + '_50')).css('background-color', '#80d4ff');
+                    $scope.selectTeam(matchID, 50, 'Draw');
+                }
+                else {
+                    //not draw, so clear that out
+                    angular.element(document.querySelector('#divMatch' + matchID + '_50')).css('background-color', '#f2ece3');
+                    angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#f2ece3');
+                    angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80d4ff');
+                    $scope.selectTeam(matchID, teamID, teamName);
+                }
                //clear for other team in this match
-                angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#ffffff');
-                angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80d4ff');
-                $scope.selectTeam(matchID, teamID, teamName);
+                console.log("Clicked " + teamName + " for matchID " + matchID);
             }
         }
 

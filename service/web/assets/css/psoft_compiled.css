@@ -45,6 +45,19 @@ body {
     z-index: 1;
 }
 
+.team-logo-panel-container {
+    background-color: #f2ece3;
+}
+
+.team-name-panel-header{
+    text-transform: uppercase;
+}
+
+.btn-light-blue {
+    background-color: #82b1ff !important;
+    color: #fff !important;
+}
+
 @font-face {
     font-family: 'dusha_plusregular';
     src: url('dusha-regular.woff') format('woff');
