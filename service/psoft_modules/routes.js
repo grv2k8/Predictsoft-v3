@@ -30,4 +30,14 @@ router.get('/v1/auth/ping',PSUtils.ping);
 router.get('/v1/games/active',PSMatch.fetchActiveMatches);          //get all active (upcoming) matches
 router.get('/v1/game/:id',PSMatch.fetchMatchDetails);               //get details of a match
 
+//prediction route
+router.get('/v1/games/prediction',PSMatch.getPredictionsForActiveMatches)
+router.post('/v1/games/predict',PSMatch.addOrUpdatePredictions);
+
+router.get('/v1/scores',PSMatch.getScoreboardList);
+
+//player/user routes
+router.get('/v1/player/:id/history',PSUsers.getPlayerPredictionHistory);
+router.get('/v1/player/points',PSUsers.getUserPoints);
+
 module.exports = router;

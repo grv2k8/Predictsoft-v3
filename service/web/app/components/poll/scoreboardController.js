@@ -4,44 +4,47 @@ Controller that handles leaderboard view
 */
 (function () {
     angular.module("psoftUI").controller("scoreboardController", sbCtrl);
-    sbCtrl.$inject = ['$scope', '$location', 'gameService'];
+    sbCtrl.$inject = ['$scope', '$location', 'authService', 'gameService'];
     
-    function sbCtrl($scope, $location,gameService) {
+    function sbCtrl($scope, $location,authService,gameService) {
 
         $scope.scoreGrid = {
             minRowsToShow: 17,
             enableColumnMenus: false,
             columnDefs: [{
-                field: 'Name',
-                displayName: 'Player Name',
+                field: 'name',
+                displayName: 'Player',
                 width: "75%",
-                cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.uid}}">{{row.entity.Name}}</a></div>'
+                cellTemplate: '<div class="ngCellText"><a href="#!/profile?id={{row.entity.userID}}">{{row.entity.name}}</a></div>'
             },
             {
-                field: 'Points',
-                displayName: '',
+                field: 'points',
+                displayName: 'Score',
                 width: "25%",
                 enableSorting: false
             }]
         };
 
         //get leaderboard for scores
-        gameService.getLeaderboardScores()
+        gameService.getLeaderboardScores(authService.getToken())
             .then(function (response) {
+                var scoreListObject = response.data;
                 if (response == null) {
                     throw "There was an error trying to connect to the web service. Please try again later";
                 }
-                if (!response.data.success) { throw response.data.message; }
-                if (response.data.scoreData.length == 0) {
+                if (!scoreListObject || !scoreListObject.success) {
+                     throw scoreListObject.message; 
+                }
+                if (scoreListObject.results.length === 0) {
                     $scope.scoreGrid = { data: '' };
                 }
                 else {
-                    //console.log(angular.toJson(response.data.scoreData,true));
-                    $scope.scoreGrid.data = response.data.scoreData;
+                    $scope.scoreGrid.data = scoreListObject.results;
                 }
             })
             .catch(function (err) {
-                console.log("Unable to fetch score table. Details:\n" + err)
+                console.log("Unable to fetch score table. Details:\r\n" + angular.toJson(err));
+                return;
             })
 	}
 })();

@@ -13,12 +13,13 @@ angular.module("psoftUI").service("gameService", function ($http) {
         minRowsToShow: 17,
         columnDefs: [
             { field: 'href',
-                displayName: 'Name',
-                cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.uid}}">{{row.entity.Name}}</a></div>'
+                displayName: 'Player',
+                cellTemplate: '<div class="ngCellText"><a href="#!/profile?id={{row.entity.userID}}">{{row.entity.name}}</a></div>'
             },
-            { field: 'Team',
+            { field: 'PredictedTeam',
                 displayName: 'Predicted Team'
-            }]
+            }
+        ]
     };
     
     this.getRemainingPredictionCount = function(){
@@ -36,40 +37,32 @@ angular.module("psoftUI").service("gameService", function ($http) {
         return predictionGrid;
     }
 
-    this.getNextGame = function () {
-        var promise = $http.get("/api/nextmatch");
-        return promise;
+    this.getNextGame = function (auth_token) {
+        return $http.get("/api/v1/games/active?access_token="+auth_token);
+        
     };
     
-    this.submitPrediction = function (usr_token, predObj) {
+    this.submitPrediction = function (auth_token, predObj) {
         
         var data = {
-            token: usr_token,               //user token
-            predObj: predObj                //array of predictions (if more than 1 game)
+            predictionData : predObj                //array of predictions (if more than one active game)
         };
-        
-        //console.log("SENDINGG..." + angular.toJson(data, true));
-        var promise = $http.post("/api/submitPrediction", data);
-        return promise;
+        return $http.post("/api/v1/games/predict?access_token="+auth_token, data);
     };
     
-    this.showNextGamePredictions = function () {
-        var promise = $http.get("/api/getPredictions");
-        return promise;
+    this.showNextGamePredictions = function (auth_token) {
+        return $http.get("/api/getPredictions?access_token="+auth_token);
     };
     
-    this.getLeaderboardScores = function () {
-        var promise = $http.get("/api/getLeaderboardScores");
-        return promise;
+    this.getLeaderboardScores = function (auth_token) {
+        return $http.get("/api/v1/scores?access_token="+auth_token);
     };
     
-    this.getPredictionList = function (user_token) {
-        var promise = $http.get("/api/getPredictions?token=" + user_token);
-        return promise;
+    this.getPredictionList = function (auth_token) {
+        return $http.get("/api/v1/games/prediction?access_token="+auth_token);
     };
     
-    this.checkIfUserPredicted = function (user_token) {
-        var promise = $http.get("/api/checkIfPredicted?token=" + user_token);
-        return promise;
+    this.checkIfUserPredicted = function (auth_token) {
+        return $http.get("/api/checkIfPredicted?access_token="+auth_token);
     };
 });

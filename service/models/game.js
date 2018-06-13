@@ -21,6 +21,7 @@ module.exports = function(sequelize, DataTypes) {
         isLocked    : DataTypes.INTEGER,	  
         matchDate   : DataTypes.DATEONLY,
         matchTime   : DataTypes.TIME,
-        winningTeamID: DataTypes.INTEGER
+        winningTeamID: DataTypes.INTEGER,
+        gameType   : DataTypes.STRING
     });
 }
