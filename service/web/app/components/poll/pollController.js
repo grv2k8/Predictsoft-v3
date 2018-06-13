@@ -260,8 +260,6 @@ Controller that handles
                     angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80d4ff');
                     $scope.selectTeam(matchID, teamID, teamName);
                 }
-               //clear for other team in this match
-                console.log("Clicked " + teamName + " for matchID " + matchID);
             }
         }
 

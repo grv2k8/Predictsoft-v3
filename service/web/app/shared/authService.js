@@ -24,13 +24,15 @@ angular.module("psoftUI").factory('authService', function ($http){
 
     usrObj.saveSession = function (psoftData){
         //save current user object and token in session storage
-        delete psoftData.success;
+        if(psoftData.success) {
+            delete psoftData.success;
+        }
         window.localStorage[session_name] = angular.toJson(psoftData);
     };
 
     usrObj.loadSession = function () {
         //check local storage for login, and return true if found
-        if (window.localStorage[session_name]) {
+        if (window.localStorage[session_name] && window.localStorage[session_name]!=="undefined") {
             this.usrObj = angular.fromJson(window.localStorage[session_name]);
             return true;
         }

@@ -13,7 +13,6 @@
                 //fetch and update score if different from session storage
                 userService.getUserPoints(authService.getToken())
                     .then(function (response) {
-                        console.log("POINTD::::",response.data);
                         if (response && response.data && response.data.points) {
                             if (authService.usrObj.points != response.data.points) {
                                 //update score and storage object
@@ -75,7 +74,6 @@
             $scope.is_waiting = true;
             authService.login($scope.email, md5.createHash($scope.password))
 			.then(function (response) {
-                console.log("RESPONSE RETURNED:: "+angular.toJson(response.data,true));
                 if (response == null) {
                     throw "There was an error trying to connect to the web service. Please try again later";
                 }
@@ -91,7 +89,6 @@
                 }; */
                 
                 delete response.data.success;
-                console.log(response.data);
 
                 authService.usrObj = angular.copy(response.data);
                 //$scope.user = angular.copy(response.data.usrData);
