@@ -37,39 +37,34 @@ angular.module("psoftUI").service("gameService", function ($http) {
     }
 
     this.getNextGame = function (auth_token) {
-        var promise = $http.get("/api/v1/games/active?access_token="+auth_token);
-        return promise;
+        return $http.get("/api/v1/games/active?access_token="+auth_token);
+        
     };
     
-    this.submitPrediction = function (usr_token, predObj) {
+    this.submitPrediction = function (auth_token, predObj) {
         
         var data = {
-            token: usr_token,               //user token
-            predObj: predObj                //array of predictions (if more than 1 game)
+            //token: usr_token,               //user token
+            predictionData : predObj                //array of predictions (if more than 1 game)
         };
         
         //console.log("SENDINGG..." + angular.toJson(data, true));
-        var promise = $http.post("/api/submitPrediction", data);
-        return promise;
+        return $http.post("/api/v1/games/predict?access_token="+auth_token, data);
     };
     
-    this.showNextGamePredictions = function () {
-        var promise = $http.get("/api/getPredictions");
-        return promise;
+    this.showNextGamePredictions = function (auth_token) {
+        return $http.get("/api/getPredictions?access_token="+auth_token);
     };
     
-    this.getLeaderboardScores = function () {
-        var promise = $http.get("/api/getLeaderboardScores");
-        return promise;
+    this.getLeaderboardScores = function (auth_token) {
+        return $http.get("/api/getLeaderboardScores?access_token="+auth_token);
     };
     
-    this.getPredictionList = function (user_token) {
-        var promise = $http.get("/api/getPredictions?token=" + user_token);
-        return promise;
+    this.getPredictionList = function (auth_token) {
+        return $http.get("/api/getPredictions?access_token="+auth_token);
     };
     
-    this.checkIfUserPredicted = function (user_token) {
-        var promise = $http.get("/api/checkIfPredicted?token=" + user_token);
-        return promise;
+    this.checkIfUserPredicted = function (auth_token) {
+        return $http.get("/api/checkIfPredicted?access_token="+auth_token);
     };
 });

@@ -1,5 +1,6 @@
 body {
     padding-top: 50px;
+    background-color:#f2ece3  !important; 
 }
 
 .starter-template {
@@ -34,12 +35,15 @@ body {
 }
 
 .navbar-default {
-  background-color:#0f4583;
-  background-image: none;
-  background-repeat: no-repeat;
+    background-color:#0f4583;
+    background-image: none;
+    background-repeat: no-repeat;
  }
 
-body { background-color:#f2ece3  !important; }
+.navbar-link {
+    position: relative;
+    z-index: 1;
+}
 
 @font-face {
     font-family: 'dusha_plusregular';

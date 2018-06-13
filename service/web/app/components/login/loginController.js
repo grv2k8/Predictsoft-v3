@@ -41,18 +41,7 @@
         }*/
 
         $scope.checkIfLoggedIn = function () {
-
-            //TODO: try to figure out why this factory function won't work
-            //console.log("factory.isLoggedIn = "+authService.isLoggedIn());
             return authService.isLoggedIn();
-
-            //possible solution for checking the user login status, if factory function fails
-            /* if(authService.usrObj.token == '')
-                 return false;
-             else{
-                 //console.log("## " + authService.usrObj.token);
-                 return true;
-             }*/
         };
 
         $scope.getUserName = function() {
@@ -62,6 +51,10 @@
             //     return '404';
             return authService.getName();
         };
+
+        $scope.getUserFirstName = function(){
+            return authService.getFirstName();
+        }
 
         $scope.getUserPoints = function() {
             // if(!authService)
@@ -126,8 +119,6 @@
         $scope.logout = function () {
             //invalidate user session
             console.log("Erasing user session...");
-            //authService.usrObj = {};
-            window.localStorage.clear();
             authService.clearAuth();
             $location.path("/login");
         };

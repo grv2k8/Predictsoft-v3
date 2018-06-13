@@ -12,7 +12,7 @@
                          <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
                      </div>
                     <div class="alert alert-success" ng-show="showConfirmation">
-                        <span>Thank you. Your selection(s) have been submitted</span>
+                        <span>Thank you,{{playerFirstName}}! Your prediction(s) have been submitted.</span>
                     </div>
                     <div class="alert alert-danger" ng-show="submitResponseERR">
                         <span>{{submitResponseERR}}</span>
@@ -30,7 +30,7 @@
                             <div class="row">
                                 <div class="text-center h5 ">
                                     <strong>
-                                        <span ng-class="{'text-muted':x.locked}">
+                                        <span ng-class="{'text-muted':x.IsGameLocked}">
                                             <span ng-bind="(x.GameTime | date:'shortTime') +' '"></span>
                                             <span ng-if="x.IsGameLocked" style="color:#ff4d4d;">(LOCKED)</span>
                                         </span>
@@ -40,7 +40,7 @@
                             <div class="col-sm-6">
                                 <div class="panel panel-primary">
                                     <div class="panel-heading"><span ng-class="{'text-danger':x.IsGameLocked}">{{x.Team1Name}}</span></div>
-                                    <div id = 'divMatch{{x.matchID}}_{{x.Team1ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID,x.Team1ID,x.Team1Name,x.Team2ID,x.locked)">
+                                    <div id = 'divMatch{{x.MatchID}}_{{x.Team1ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.IsGameLocked}" ng-click="div_click(x.MatchID,x.Team1ID,x.Team1Name,x.Team2ID,x.IsGameLocked)">
                                         <div class="row"><img ng-src="{{x.Team1LogoUrl}}" alt="{{x.Team1Name}}" style="width:72px;height:42px;" /></div>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
                            <!--<div class="col-sm-4">-->
                                 <!--<div class="panel panel-primary">-->
                                     <!--<div class="panel-heading"></div>-->
-                                    <!--<div id = 'divMatch{{x.matchID}}_50' class="panel-body text-center locked-panel" style="height: 92px;;" ng-class="{'locked-panel':x.locked}">-->
+                                    <!--<div id = 'divMatch{{x.MatchID}}_50' class="panel-body text-center locked-panel" style="height: 92px;;" ng-class="{'locked-panel':x.IsGameLocked}">-->
                                         <!--<div class="row"></div>-->
                                         <!--<div class="row">DRAW</div>-->
                                     <!--</div>-->
@@ -57,8 +57,8 @@
                             <!--</div>-->
                             <div class="col-sm-6">
                                 <div class="panel panel-primary">
-                                    <div class="panel-heading"><span ng-class="{'text-danger':x.locked}">{{x.Team2Name}}</span></div>
-                                    <div id = 'divMatch{{x.matchID}}_{{x.Team2ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID, x.Team2ID,x.Team2Name,x.Team1ID,x.locked)">
+                                    <div class="panel-heading"><span ng-class="{'text-danger':x.IsGameLocked}">{{x.Team2Name}}</span></div>
+                                    <div id = 'divMatch{{x.MatchID}}_{{x.Team2ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.IsGameLocked}" ng-click="div_click(x.MatchID, x.Team2ID,x.Team2Name,x.Team1ID,x.IsGameLocked)">
                                         <div class="row"><img ng-src="{{x.Team2LogoUrl}}" alt="{{x.Team2Name}}" style="width:72px;height:42px;" /></div>
                                     </div>
                                 </div>

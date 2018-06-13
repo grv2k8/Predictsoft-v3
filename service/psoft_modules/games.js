@@ -22,9 +22,9 @@ var TFGames = {
             _response = {
                 success         : true,
                 message         : "OK",
-                number_of_games : gamesResponseObject.length,
-                match_date      : gamesResponseObject[0].GameDate,
-                results         : gamesResponseObject 
+                number_of_games : (gamesResponseObject && gamesResponseObject.length)|| 0,
+                match_date      : (gamesResponseObject && gamesResponseObject[0] && gamesResponseObject[0].GameDate) || '',
+                results         : (gamesResponseObject)||{} 
             }
             res.status(200).json(_response);
             res.end();
@@ -95,7 +95,7 @@ var TFGames = {
                 message         : "OK",
                 results         : predictionResponseList
             }
-            res.status(200).json(predictionResponseList);
+            res.status(200).json(_response);
             res.end();
             return;
         })
@@ -104,7 +104,6 @@ var TFGames = {
             log.error('TFGames:addOrUpdatePredictions() - Cannot submit prediction. Details: ',error);
             _response = {
                 success : false,
-                data    : error,
                 message : 'The request could not be completed. The mods will be notified.'
             }
             res.status(500).json(_response);

@@ -16,14 +16,12 @@ Controller that handles
         
         $scope.loadingGames = true;         //flag to show "Loading games...." animation
         
-        $scope.user_token = authService.getToken();
-        
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
 
         $scope.msg_announcement = "Predictions from other players will be revealed 15 minutes before the match";
         $scope.display_announcement = true;            //TODO: move these to config/exports file
-
+        $scope.playerFirstName = authService.getFirstName();
 
         $scope.predictionGridLoaded = true;
 
@@ -110,10 +108,9 @@ Controller that handles
         else {
             //getLeaderBoard();			//load score table - moved to scoreboardController.js
             //getPredictionTable();		//load prediction table
-            
-            console.log("$$$Using token: ",authService.usrObj.auth_data.token);
+
             //get list of active games
-            gameService.getNextGame(authService.usrObj.auth_data.token)
+            gameService.getNextGame(authService.getToken())
             .then(function (response) {
                 var gamesObject = response.data;
                 console.log(gamesObject);
@@ -129,7 +126,6 @@ Controller that handles
                     throw error;
                 }
                 $scope.nogames = (gamesObject.number_of_games <= 0);
-                console.log("@@",$scope.nogames);
                 if ($scope.nogames) {
                     //no games marked as isActive=1 on the database
                     $scope.matchType = '';
@@ -160,11 +156,11 @@ Controller that handles
         
         $scope.submitPoll = function () {
             //submit prediction data to the server
-            
+            $scope.submitResponseERR = "";
             //check if all NON-LOCKED matches have been predicted
             var lgc = 0;        //locked games count
             $scope.games.forEach(function(g){
-                    if(g.locked) lgc++;
+                    if(g.IsGameLocked) lgc++;
             });
 
             //check total game count = number of selection + locked games
@@ -175,49 +171,42 @@ Controller that handles
             else {
                 //try submitting
                 $scope.predErr = false;
-                gameService.submitPrediction(authService.usrObj.token, $scope.selection)
-			.then(function (response) {
-                    if (response == null) {
-                        throw "There was an error trying to send the prediction data. Please try again later";
+                gameService.submitPrediction(authService.getToken(), $scope.selection)
+                .then(function (response) {
+                    var predictionResponseObject = response.data;
+                    if(!predictionResponseObject || !predictionResponseObject.success){
+                        console.error(response);
+                        throw response;
                     }
-                    
-                    //console.log(">>"+angular.toJson(response, true));
-                    
-                    if (!gamesObject.success) {
-                        //if(!gamesObject.message)
-                        $scope.submitResponseERR = gamesObject.message;
-                        //throw gamesObject.message;
-                        return;
-                    }
-                    
+                    console.log("vv",predictionResponseObject);    
                     $scope.showConfirmation = true;
                     //$location.path("/poll");
                     return;
                 })
-            .then(function(){
+                .then(function(){
 
-                $scope.predictionGridLoaded = false;
-                //wait for 3 seconds (to allow all updates) and refresh prediction grid
-                $timeout(function(){
-                    gameService.getPredictionList($scope.user_token)
-                    .then(function (response) {
-                        if (response == null) {
-                            throw "There was an error trying to fetch prediction data from the web service. Please try again later";
-                        }
-                        if (!gamesObject.success) { throw gamesObject.message; }
+                    $scope.predictionGridLoaded = false;
+                    //wait for 3 seconds (to allow all updates) and refresh prediction grid
+                    $timeout(function(){
+                        gameService.getPredictionList(authService.getToken())
+                        .then(function (response) {
+                            if (response == null) {
+                                throw "There was an error trying to fetch prediction data from the web service. Please try again later";
+                            }
+                            if (!gamesObject.success) { throw gamesObject.message; }
 
-                        gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
-                        gameService.fillPredictionGrid(gamesObject.predictData);      //for dynamic refreshing of prediction grid
-                        $scope.predictionGridLoaded = true;
-                    })
-                },3000);
-            })
-			.catch(function (err) {
-                    $scope.message = err;
-                    $scope.is_valid = false;
-                    console.log(err);
+                            gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
+                            gameService.fillPredictionGrid(gamesObject.predictData);      //for dynamic refreshing of prediction grid
+                            $scope.predictionGridLoaded = true;
+                        })
+                    },3000);
                 })
-            }
+                .catch(function (err) {
+                        console.error((err && err.data && err.data.message)||'[Not available]');
+                        $scope.submitResponseERR = "There was an error trying to send the prediction data. Please try again later";
+                        $scope.is_valid = false;
+                    })
+                }
         };
         
         //add each match's predictions inside a JSON object, to send back to server
@@ -262,6 +251,7 @@ Controller that handles
                 angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#ffffff');
                 angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80d4ff');
                 $scope.selectTeam(matchID, teamID, teamName);
+                console.log("Selected team id ",teamID," for match ID ",matchID);
             }
         }
 
