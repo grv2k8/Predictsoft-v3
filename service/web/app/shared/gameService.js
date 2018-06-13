@@ -13,8 +13,8 @@ angular.module("psoftUI").service("gameService", function ($http) {
         minRowsToShow: 17,
         columnDefs: [
             { field: 'href',
-                displayName: 'name',
-                cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.userID}}">{{row.entity.name}}</a></div>'
+                displayName: 'Player',
+                cellTemplate: '<div class="ngCellText"><a href="#!/profile?id={{row.entity.userID}}">{{row.entity.name}}</a></div>'
             },
             { field: 'PredictedTeam',
                 displayName: 'Predicted Team'

@@ -137,7 +137,7 @@ Controller that handles
 
                     //var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
                     //$scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
-                    $scope.matchType = ('('+ $scope.games[0].GameType + ')') || '';
+                    $scope.matchType = ($scope.games[0].GameType ) || '';
                     $scope.matchPoints =   $scope.games[0].GamePoints || 0;
                 }
                 return;

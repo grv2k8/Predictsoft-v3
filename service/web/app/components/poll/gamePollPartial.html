@@ -5,8 +5,8 @@
                 <div class="col-sm-12">
                     <!-- Poll and Prediction column-->
                     <div class="text-center">
-                        <div class="h1">Upcoming games</div>
-                        <div class="h4">{{matchType}}</div>
+                        <div class="h1 psoft-euro-emphasis-text">{{matchType}}</div>
+                        <div class="h4"></div>
                     </div>
                     <div ng-if="showDateRemaining(matchDateTime)" class="alert alert-warning fade in" ng-show="display_announcement">
                          <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
@@ -85,7 +85,7 @@
                     <div ng-hide="nogames">
                         <div ng-controller="predListController">
                             <div class="h1">
-                                <span>Prediction list</span>
+                                <span class="psoft-euro-emphasis-text">Prediction list</span>
                                 <span ng-if="showDateRemaining(matchDateTime)" class="h5">
                                     (Time remaining: <timer end-time='matchDateTime'><span>{{days}} days </span>{{hhours}}:{{mminutes}}:{{sseconds}}</timer>)
                                     <span class="h5" ng-if="predictionGridLoaded">/ {{getRemainingPlayerCount()}} predictions left </span>
@@ -99,7 +99,7 @@
                 <div class="col-sm-4">
                     <!-- Leaderboard column -->
                     <div>
-                        <div class="text-center h1">Scoreboard</div>
+                        <div class="text-center h1 psoft-euro-emphasis-text">Scoreboard</div>
                         <div ng-controller="scoreboardController">
                             <div ui-grid="scoreGrid"></div>
                         </div>
