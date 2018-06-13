@@ -11,12 +11,13 @@
         if (!authService.isLoggedIn()) {
             if (authService.loadSession()) {
                 //fetch and update score if different from session storage
-                userService.getUserPoints(authService.usrObj.token)
+                userService.getUserPoints(authService.getToken())
                     .then(function (response) {
-                        if (response != null) {
-                            if (authService.usrObj.points != response.data.score) {
+                        console.log("POINTD::::",response.data);
+                        if (response && response.data && response.data.points) {
+                            if (authService.usrObj.points != response.data.points) {
                                 //update score and storage object
-                                authService.usrObj.points = response.data.score;
+                                authService.usrObj.points = response.data.points;
                                 authService.saveSession();      //update score in saved session
                             }
                         }

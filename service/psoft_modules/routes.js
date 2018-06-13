@@ -36,4 +36,8 @@ router.post('/v1/games/predict',PSMatch.addOrUpdatePredictions);
 
 router.get('/v1/scores',PSMatch.getScoreboardList);
 
+//player/user routes
+router.get('/v1/player/:id/history',PSUsers.getPlayerPredictionHistory);
+router.get('/v1/player/points',PSUsers.getUserPoints);
+
 module.exports = router;

@@ -28,10 +28,8 @@ angular.module("psoftUI").service("userService", function ($http){
     // };
 
 
-    this.getUserPoints = function (token) {
-
-        var promise = $http.get("/api/getUserPoints/?token=" + token);
-        return promise;
+    this.getUserPoints = function (auth_token) {
+        return $http.get("/api/v1/player/points?access_token=" + auth_token);
     };
 
     //
@@ -64,17 +62,14 @@ angular.module("psoftUI").service("userService", function ($http){
             token   : token
         };
         
-        var promise = $http.post("/api/register", data);
-        return promise;
+        return $http.post("/api/register", data);
     };
     
     this.getPredictionHistory = function (token) {
-        var promise = $http.get("/api/getHistory?token=" + token);
-        return promise;
+        return $http.get("/api/getHistory?token=" + token);
     };
 
-    this.getPredictionHistoryByID = function(userID){
-        var promise = $http.get("/api/getHistoryByID?userID=" + userID);
-        return promise;
+    this.getPredictionHistoryByPlayerID = function(auth_token, userID){
+        return $http.get("/api/v1/player/"+userID+"/history?access_token=" + auth_token);
     }
 });

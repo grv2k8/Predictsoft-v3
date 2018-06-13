@@ -52,6 +52,11 @@ angular.module("psoftUI").factory('authService', function ($http){
             return this.usrObj.user_data.name;
     };
     
+    usrObj.getUserID = function(){
+        if(this.usrObj)
+            return this.usrObj.user_data.userID;
+    };
+
     usrObj.getFirstName = function(){
         if(this.usrObj)
             return this.usrObj.user_data.first_name;

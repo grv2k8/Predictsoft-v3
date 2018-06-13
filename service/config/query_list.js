@@ -40,6 +40,21 @@ module.exports = {
             "SELECT U.userID, U.name, (SELECT name from teams WHERE ID = P.predictedTeamID) as PredictedTeam " +
             "FROM games G, predictions P, users U " +
             "WHERE G.isActive = 1 AND G.ID = P.matchID AND P.playerID = U.userID AND U.userID = " + userID ;
+    },
+    getUserPredictionHistory: function(userID){
+        return "SELECT U.name as player_name, " + 
+                    "U.points as player_points, " +
+                    "G.MatchDate AS match_date, " +
+                    "G.points AS game_weight, " +
+                    "(SELECT Name FROM teams WHERE ID = G.Team1) AS team1, " +
+                    "(SELECT Name FROM teams WHERE ID = G.Team2) AS team2, " +
+                    "(SELECT Name FROM teams WHERE ID = p.predictedTeamID) AS predicted_team, " +
+                    "(SELECT Name FROM teams WHERE ID = G.WinningTeamID) AS winning_team  " +
+                "FROM predictions P, games G, users U " +
+                "WHERE " +
+                    "G.isActive = 0 AND " +
+                    "G.ID = P.matchID AND " +
+                    "U.userID = P.playerID AND " + 
+                    "P.playerID = " + userID
     }
-
 };

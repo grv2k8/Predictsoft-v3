@@ -5,8 +5,9 @@
 
 const util = require('./utils');
 const log = util.Log;
-const db = util.Database;
 const config = util.Config;
+const database = util.Database;
+const queries = database.QueryList;
 
 var TFUsers = {
     /* Register a user (while registration period is open, defined in config file) */
@@ -52,7 +53,7 @@ var TFUsers = {
                 return null;        //this return is for next then block
             }
 
-            return db.User
+            return database.User
             .build({
                 name    : req.body.name,
                 email   : req.body.email,
@@ -100,8 +101,7 @@ var TFUsers = {
             res.end();
             return;
         }
-
-        db.User.find({
+        database.User.find({
             where: {
                 userID   : req.params.id    
             }
@@ -137,6 +137,63 @@ var TFUsers = {
             res.end();
             return;
         })
+    },
+
+    /* GET prediction history for all past matches for player id */
+    getPlayerPredictionHistory: function(req,res){
+        var _response = {};
+        var player_id = req.params.id;
+        database.query(
+            queries.getUserPredictionHistory(player_id),
+            database.DBConnection.QueryTypes.SELECT
+        )
+        .then(userHistoryResponseObject=>{
+            _response = {
+                success         : true,
+                message         : "OK",
+                user_name       : userHistoryResponseObject[0].player_name || 'N/A',
+                user_points     : userHistoryResponseObject[0].player_points || 0,
+                results         : (userHistoryResponseObject)||{} 
+            }
+            res.status(200).json(_response);
+            res.end();
+            return;
+        })
+        .catch(error=>{
+            log.error('Users:getPlayerPredictionHistory() - Cannot fetch prediction history for player ID ' + req.parms.id + ' games. Details: ',error);
+            _response = {
+                success: false,
+                message: 'The request could not be completed. The mods will be notified.'
+            }
+            res.status(500).json(_response);
+            res.end();
+            return;
+        })
+    },
+
+    /* GET score/points for current player by ID */
+    getUserPoints: function(req,res){
+        database.User.findOne({
+            where:{
+                userID: req.psoftUser.ID
+            }
+        })
+        .then(userRow=>{
+            res.status(200).json({
+                success : true,
+                points    : userRow.points
+            }) 
+        })
+        .catch(err=>{
+            log.error('User:getUserPoints() - Cannot fetch user points. Details: ',error);
+            _response = {
+                success: false,
+                message: 'The request could not be completed. The mods will be notified.'
+            }
+            res.status(500).json(_response);
+            res.end();
+            return;
+        });       
     }
 }
 

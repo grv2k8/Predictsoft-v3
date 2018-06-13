@@ -6,28 +6,24 @@
     angular.module("psoftUI").controller("profileController", profileCtrl);
     profileCtrl.$inject = ['$scope', '$location', 'userService', 'authService', '$routeParams', '$window', 'md5'];
     function profileCtrl($scope, $location, userService, authService, $routeParams, $window, md5) {
-
-
         $scope.gameHistory = [];
         $scope.name = '';
         $scope.points = 0;
 
         var getMyGameHistory = function(token){
-
-            userService.getPredictionHistory(authService.getToken())
+            userService.getPredictionHistoryByPlayerID(authService.getToken(),authService.getUserID())
                 .then(function (response) {
-                    //console.log(angular.toJson(response.data));
-                    if (response == null) {
+                    if (!response || !response.data || !response.data.success) {
                         throw "There was an error trying to get user prediction history from the server. Please try again later";
                     }
-                    if (!response.data.success) { throw response.data.message; }
-                    if (response.data.historyData.length == 0) {
+                    var userPredictionHistoryObject = response.data;
+                    if (userPredictionHistoryObject.results.length === 0) {
                         //show empty grid
+                        console.info("Player prediction history is empty!");
                         $scope.gameHistory = [];
-                        throw "History array is null!";
                     }
                     else {
-                        $scope.gameHistory = response.data.historyData.slice();
+                        $scope.gameHistory = userPredictionHistoryObject.results.slice();
                         $scope.name = authService.getName();
                         $scope.points = authService.getPoints();
                     }
@@ -38,24 +34,21 @@
         };
 
         var getUserGameHistory = function(userID){
-
-            userService.getPredictionHistoryByID(userID)
+            userService.getPredictionHistoryByPlayerID(authService.getToken(), userID)
                 .then(function (response) {
-                    //console.log(angular.toJson(response.data));
-                    if (response == null) {
+                    if (!response || !response.data || !response.data.success) {
                         throw "There was an error trying to get user prediction history from the server. Please try again later";
                     }
-                    if (!response.data.success) { throw response.data.message; }
-                    if (response.data.historyData.length == 0) {
+                    var userPredictionHistoryObject = response.data;
+                    if (userPredictionHistoryObject.results.length === 0) {
                         //show empty grid
+                        console.info("Player prediction history is empty!");
                         $scope.gameHistory = [];
-                        throw "History array is null!";
                     }
                     else {
-                        $scope.gameHistory = response.data.historyData.slice();
-                        $scope.name = response.data.userData.name;
-                        $scope.points = response.data.userData.points;
-                        //console.log("DONE LOADING>..");
+                        $scope.gameHistory = userPredictionHistoryObject.results.slice();
+                        $scope.name = userPredictionHistoryObject.user_name;
+                        $scope.points = userPredictionHistoryObject.user_points;
                     }
                 })
                 .catch(function (err) {
