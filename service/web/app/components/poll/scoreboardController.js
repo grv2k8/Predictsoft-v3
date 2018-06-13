@@ -13,13 +13,13 @@ Controller that handles leaderboard view
             enableColumnMenus: false,
             columnDefs: [{
                 field: 'name',
-                displayName: 'Player Name',
+                displayName: 'Player',
                 width: "75%",
-                cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.userID}}">{{row.entity.name}}</a></div>'
+                cellTemplate: '<div class="ngCellText"><a href="#!/profile?id={{row.entity.userID}}">{{row.entity.name}}</a></div>'
             },
             {
                 field: 'points',
-                displayName: '',
+                displayName: 'Score',
                 width: "25%",
                 enableSorting: false
             }]
