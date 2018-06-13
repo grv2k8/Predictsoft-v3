@@ -36,7 +36,6 @@ Controller that retrieves prediction list for current match from submitted entri
                     throw "There was an error trying to fetch prediction data from the web service. Please try again later";
                 }
                 var predictionListObject = response.data;                
-                console.log(">>>",predictionListObject);
 
                 gameService.setRemainingPredictionCount(response.data.rem_predictions);
                 gameService.fillPredictionGrid(predictionListObject.results);      //for dynamically refreshing the prediction grid
