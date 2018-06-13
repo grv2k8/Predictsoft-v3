@@ -12,6 +12,7 @@ module.exports = function(sequelize, DataTypes) {
       password: DataTypes.STRING,
       avatar  : DataTypes.STRING,
       auth_key: DataTypes.STRING,
+      isr00t  : DataTypes.INTEGER,
       points  : DataTypes.INTEGER
     });
 }

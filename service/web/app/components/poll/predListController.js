@@ -29,23 +29,17 @@ Controller that retrieves prediction list for current match from submitted entri
             return;
         }
 
-        // TODO: something to update grid dynamically?
-        // $scope.$watch(currentPredList)
-
         //get Prediction from API
         gameService.getPredictionList($scope.user_token)
             .then(function (response) {
-                if (response == null) {
+                if (!response || !response.data || !response.data.success) {
                     throw "There was an error trying to fetch prediction data from the web service. Please try again later";
                 }
-                if (!response.data.success) { throw response.data.message; }
-                //console.log(angular.toJson(response.data,true));
+                var predictionListObject = response.data;                
+                console.log(">>>",predictionListObject);
 
-                if (response.data.predictData.length == 1) {
-                    $scope.lockDown = true;
-                }
                 gameService.setRemainingPredictionCount(response.data.rem_predictions);
-                gameService.fillPredictionGrid(response.data.predictData);      //for dynamically refreshing the prediction grid
+                gameService.fillPredictionGrid(predictionListObject.results);      //for dynamically refreshing the prediction grid
             })
             .catch(function (err) {
                 console.error("Unable to fetch prediction table. Details:\n" + err);

@@ -164,7 +164,7 @@ var Utils = module.exports = {
         {
             res.status(200).json({
                 status: 'Ping! psoftv3 (SERVICE: ' + Utils.Config.getAppSignature() + ') is up and running',
-                requestedBy: (req.user) ? req.user.fullName + '(is_admin: ' + req.user.admin + ')' : 'N/A'     //to support both auth and non-auth pings
+                requestedBy: (req.psoftUser) ? req.psoftUser.name + '(is_admin: ' + req.psoftUser.admin + ')' : 'N/A'     //to support both auth and non-auth pings
             });
             Utils.Log.info('Ping successful!');
             res.end();

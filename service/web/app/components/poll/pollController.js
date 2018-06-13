@@ -16,18 +16,20 @@ Controller that handles
         
         $scope.loadingGames = true;         //flag to show "Loading games...." animation
         
-        $scope.user_token = authService.getToken();
-        
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
 
         $scope.msg_announcement = "Predictions from other players will be revealed 15 minutes before the match";
         $scope.display_announcement = true;            //TODO: move these to config/exports file
-
+        $scope.playerFirstName = authService.getFirstName();
 
         $scope.predictionGridLoaded = true;
 
-        $scope.matchDateTime = '';
+        $scope.matchDate = '';
+
+        //$scope.matchDateTime = '';
+        $scope.matchType = '';
+        $scope.matchPoints = 0;
         var now = new Date();
 
         // $scope.lockDown = false;
@@ -106,36 +108,37 @@ Controller that handles
         else {
             //getLeaderBoard();			//load score table - moved to scoreboardController.js
             //getPredictionTable();		//load prediction table
-            
-            
-            //get list of active games
-           gameService.getNextGame()
-				.then(function (response) {
-                
-                $scope.loadingGames = false;            //hide the "Loading...." animation
-                
-                if (response == null) {
-                    throw "There was an error trying to connect to the web service. Please try again later";
-                }
-                
-                if (!response.data.success) {
-                    throw response.data.message;
-                }
 
-                //console.log(angular.toJson(response.data, true));
-                
-                if (response.data.count == 0) {
-                    $scope.nogames = true;
+            //get list of active games
+            gameService.getNextGame(authService.getToken())
+            .then(function (response) {
+                var gamesObject = response.data;
+                $scope.loadingGames = false;            //hide the "Loading...." animation
+                if (!response || !gamesObject) {
+                    var noRespErr = "There was an error trying to connect to the web service. Please try again later";
+                    $scope.submitResponseERR = noRespErr;
+                    throw noRespErr;
+                }
+                if (!gamesObject.success) {
+                    var error = (gamesObject && gamesObject.message) || 'Something went wrong. Please contact the admin';
+                    $scope.submitResponseERR = error;
+                    throw error;
+                }
+                $scope.nogames = (gamesObject.number_of_games <= 0);
+                if ($scope.nogames) {
+                    //no games marked as isActive=1 on the database
+                    $scope.matchType = '';
                 }
                 else {
-                    $scope.games = response.data.matchData.slice();		//copy games info to scope
-                    $scope.nogames = false;
+                    $scope.games = gamesObject.results.slice();		//copy games info to scope
+                    $scope.matchDate = gamesObject.match_date;
+                    //$scope.remainingPredictions = gamesObject.rem_predictions;
+                    gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
 
-                    //$scope.remainingPredictions = response.data.rem_predictions;
-                    gameService.setRemainingPredictionCount(response.data.rem_predictions);
-
-                    var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
-                    $scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
+                    //var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
+                    //$scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
+                    $scope.matchType = ('('+ $scope.games[0].GameType + ')') || '';
+                    $scope.matchPoints =   $scope.games[0].GamePoints || 0;
                 }
                 return;
             })
@@ -149,11 +152,11 @@ Controller that handles
         
         $scope.submitPoll = function () {
             //submit prediction data to the server
-            
+            $scope.submitResponseERR = "";
             //check if all NON-LOCKED matches have been predicted
             var lgc = 0;        //locked games count
             $scope.games.forEach(function(g){
-                    if(g.locked) lgc++;
+                    if(g.IsGameLocked) lgc++;
             });
 
             //check total game count = number of selection + locked games
@@ -164,49 +167,42 @@ Controller that handles
             else {
                 //try submitting
                 $scope.predErr = false;
-                gameService.submitPrediction(authService.usrObj.token, $scope.selection)
-			.then(function (response) {
-                    if (response == null) {
-                        throw "There was an error trying to send the prediction data. Please try again later";
+                gameService.submitPrediction(authService.getToken(), $scope.selection)
+                .then(function (response) {
+                    var predictionResponseObject = response.data;
+                    if(!predictionResponseObject || !predictionResponseObject.success){
+                        console.error(response);
+                        throw response;
                     }
-                    
-                    //console.log(">>"+angular.toJson(response, true));
-                    
-                    if (!response.data.success) {
-                        //if(!response.data.message)
-                        $scope.submitResponseERR = response.data.message;
-                        //throw response.data.message;
-                        return;
-                    }
-                    
                     $scope.showConfirmation = true;
                     //$location.path("/poll");
                     return;
                 })
-            .then(function(){
+                .then(function(){
 
-                $scope.predictionGridLoaded = false;
-                //wait for 3 seconds (to allow all updates) and refresh prediction grid
-                $timeout(function(){
-                    gameService.getPredictionList($scope.user_token)
-                    .then(function (response) {
-                        if (response == null) {
-                            throw "There was an error trying to fetch prediction data from the web service. Please try again later";
-                        }
-                        if (!response.data.success) { throw response.data.message; }
+                    $scope.predictionGridLoaded = false;
+                    $scope.predictionGrid = gameService.getPredictionGrid();
+                    //wait for 3 seconds (to allow all updates) and refresh prediction grid
+                    $timeout(function(){
+                        gameService.getPredictionList(authService.getToken())
+                        .then(function (response) {
+                            var predictionListObject = response.data;
+                            if (!response || !response.data || !predictionListObject.success) {
+                                throw "There was an error trying to fetch prediction data from the web service. Please try again later";
+                            }
 
-                        gameService.setRemainingPredictionCount(response.data.rem_predictions);
-                        gameService.fillPredictionGrid(response.data.predictData);      //for dynamic refreshing of prediction grid
-                        $scope.predictionGridLoaded = true;
-                    })
-                },3000);
-            })
-			.catch(function (err) {
-                    $scope.message = err;
-                    $scope.is_valid = false;
-                    console.log(err);
+                            gameService.setRemainingPredictionCount(predictionListObject.remaining_predictions);
+                            gameService.fillPredictionGrid(predictionListObject.results);      //for dynamic refreshing of prediction grid
+                            $scope.predictionGridLoaded = true;
+                        })
+                    },3000);                                                        //refresh after 5 seconds
                 })
-            }
+                .catch(function (err) {
+                        console.error((err && err.data && err.data.message)||'[Not available]');
+                        $scope.submitResponseERR = "There was an error trying to send the prediction data. Please try again later";
+                        $scope.is_valid = false;
+                    })
+                }
         };
         
         //add each match's predictions inside a JSON object, to send back to server
@@ -227,8 +223,8 @@ Controller that handles
             });
 
             /*Disable for group of 16 onwards*/
-            if(teamID == 50)
-                return;
+            /*if(teamID == 50)
+                return;*/
 
             if (doAdd) {
                 $scope.selection.push(
@@ -246,11 +242,25 @@ Controller that handles
 
         $scope.div_click = function(matchID, teamID, teamName, otherTeamID, isLocked){
 
+            //for a draw, team1ID vs otherTeamID are not selected/cleared
+            //also, teamName never lie   \o/
             if(!isLocked) {
+                if(teamName === "Draw"){
+                    //draw
+                    angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#f2ece3');
+                    angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#f2ece3');
+                    angular.element(document.querySelector('#divMatch' + matchID + '_50')).css('background-color', '#80d4ff');
+                    $scope.selectTeam(matchID, 50, 'Draw');
+                }
+                else {
+                    //not draw, so clear that out
+                    angular.element(document.querySelector('#divMatch' + matchID + '_50')).css('background-color', '#f2ece3');
+                    angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#f2ece3');
+                    angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80d4ff');
+                    $scope.selectTeam(matchID, teamID, teamName);
+                }
                //clear for other team in this match
-                angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#ffffff');
-                angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80d4ff');
-                $scope.selectTeam(matchID, teamID, teamName);
+                console.log("Clicked " + teamName + " for matchID " + matchID);
             }
         }
 

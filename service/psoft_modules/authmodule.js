@@ -70,7 +70,6 @@ var auth = {
     /* validates /v1/* route access and returns user object if successful */
     validateAccess: function(user_email){
         return new Promise(function (resolve, reject) {
-            
             db.User.find({
                 where: {
                     email   : user_email

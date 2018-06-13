@@ -39,7 +39,7 @@ angular.module("psoftUI").factory('authService', function ($http){
     };
 
     usrObj.isLoggedIn = function(){
-        if(!this.usrObj){
+        if(!this.usrObj || !this.usrObj.auth_data){
             return false;
         }
         else{
@@ -51,6 +51,17 @@ angular.module("psoftUI").factory('authService', function ($http){
         if(this.usrObj)
             return this.usrObj.user_data.name;
     };
+    
+    usrObj.getUserID = function(){
+        if(this.usrObj)
+            return this.usrObj.user_data.userID;
+    };
+
+    usrObj.getFirstName = function(){
+        if(this.usrObj)
+            return this.usrObj.user_data.first_name;
+    };
+
 
     usrObj.getPoints = function(){
         if(this.usrObj)
@@ -66,6 +77,7 @@ angular.module("psoftUI").factory('authService', function ($http){
     };
 
     usrObj.clearAuth = function(){
+        window.localStorage.clear();
         this.usrObj = {
             userID: '',
             email: '',

@@ -11,12 +11,13 @@
         if (!authService.isLoggedIn()) {
             if (authService.loadSession()) {
                 //fetch and update score if different from session storage
-                userService.getUserPoints(authService.usrObj.token)
+                userService.getUserPoints(authService.getToken())
                     .then(function (response) {
-                        if (response != null) {
-                            if (authService.usrObj.points != response.data.score) {
+                        console.log("POINTD::::",response.data);
+                        if (response && response.data && response.data.points) {
+                            if (authService.usrObj.points != response.data.points) {
                                 //update score and storage object
-                                authService.usrObj.points = response.data.score;
+                                authService.usrObj.points = response.data.points;
                                 authService.saveSession();      //update score in saved session
                             }
                         }
@@ -41,18 +42,7 @@
         }*/
 
         $scope.checkIfLoggedIn = function () {
-
-            //TODO: try to figure out why this factory function won't work
-            //console.log("factory.isLoggedIn = "+authService.isLoggedIn());
             return authService.isLoggedIn();
-
-            //possible solution for checking the user login status, if factory function fails
-            /* if(authService.usrObj.token == '')
-                 return false;
-             else{
-                 //console.log("## " + authService.usrObj.token);
-                 return true;
-             }*/
         };
 
         $scope.getUserName = function() {
@@ -62,6 +52,10 @@
             //     return '404';
             return authService.getName();
         };
+
+        $scope.getUserFirstName = function(){
+            return authService.getFirstName();
+        }
 
         $scope.getUserPoints = function() {
             // if(!authService)
@@ -126,8 +120,6 @@
         $scope.logout = function () {
             //invalidate user session
             console.log("Erasing user session...");
-            //authService.usrObj = {};
-            window.localStorage.clear();
             authService.clearAuth();
             $location.path("/login");
         };
