@@ -13,12 +13,13 @@ angular.module("psoftUI").service("gameService", function ($http) {
         minRowsToShow: 17,
         columnDefs: [
             { field: 'href',
-                displayName: 'Name',
-                cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.uid}}">{{row.entity.Name}}</a></div>'
+                displayName: 'name',
+                cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.userID}}">{{row.entity.name}}</a></div>'
             },
-            { field: 'Team',
+            { field: 'PredictedTeam',
                 displayName: 'Predicted Team'
-            }]
+            }
+        ]
     };
     
     this.getRemainingPredictionCount = function(){
@@ -44,11 +45,8 @@ angular.module("psoftUI").service("gameService", function ($http) {
     this.submitPrediction = function (auth_token, predObj) {
         
         var data = {
-            //token: usr_token,               //user token
-            predictionData : predObj                //array of predictions (if more than 1 game)
+            predictionData : predObj                //array of predictions (if more than one active game)
         };
-        
-        //console.log("SENDINGG..." + angular.toJson(data, true));
         return $http.post("/api/v1/games/predict?access_token="+auth_token, data);
     };
     
@@ -57,11 +55,11 @@ angular.module("psoftUI").service("gameService", function ($http) {
     };
     
     this.getLeaderboardScores = function (auth_token) {
-        return $http.get("/api/getLeaderboardScores?access_token="+auth_token);
+        return $http.get("/api/v1/scores?access_token="+auth_token);
     };
     
     this.getPredictionList = function (auth_token) {
-        return $http.get("/api/getPredictions?access_token="+auth_token);
+        return $http.get("/api/v1/games/prediction?access_token="+auth_token);
     };
     
     this.checkIfUserPredicted = function (auth_token) {

@@ -113,7 +113,6 @@ Controller that handles
             gameService.getNextGame(authService.getToken())
             .then(function (response) {
                 var gamesObject = response.data;
-                console.log(gamesObject);
                 $scope.loadingGames = false;            //hide the "Loading...." animation
                 if (!response || !gamesObject) {
                     var noRespErr = "There was an error trying to connect to the web service. Please try again later";
@@ -133,16 +132,13 @@ Controller that handles
                 else {
                     $scope.games = gamesObject.results.slice();		//copy games info to scope
                     $scope.matchDate = gamesObject.match_date;
-                    console.log("???",$scope.games);
-
                     //$scope.remainingPredictions = gamesObject.rem_predictions;
                     gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
 
-                    var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
-                    /////////////////$scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
+                    //var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
+                    //$scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
                     $scope.matchType = ('('+ $scope.games[0].GameType + ')') || '';
                     $scope.matchPoints =   $scope.games[0].GamePoints || 0;
-                    console.log("PPP:",$scope.games[0].GameType);
                 }
                 return;
             })
@@ -178,7 +174,6 @@ Controller that handles
                         console.error(response);
                         throw response;
                     }
-                    console.log("vv",predictionResponseObject);    
                     $scope.showConfirmation = true;
                     //$location.path("/poll");
                     return;
@@ -186,20 +181,21 @@ Controller that handles
                 .then(function(){
 
                     $scope.predictionGridLoaded = false;
+                    $scope.predictionGrid = gameService.getPredictionGrid();
                     //wait for 3 seconds (to allow all updates) and refresh prediction grid
                     $timeout(function(){
                         gameService.getPredictionList(authService.getToken())
                         .then(function (response) {
-                            if (response == null) {
+                            var predictionListObject = response.data;
+                            if (!response || !response.data || !predictionListObject.success) {
                                 throw "There was an error trying to fetch prediction data from the web service. Please try again later";
                             }
-                            if (!gamesObject.success) { throw gamesObject.message; }
 
-                            gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
-                            gameService.fillPredictionGrid(gamesObject.predictData);      //for dynamic refreshing of prediction grid
+                            gameService.setRemainingPredictionCount(predictionListObject.remaining_predictions);
+                            gameService.fillPredictionGrid(predictionListObject.results);      //for dynamic refreshing of prediction grid
                             $scope.predictionGridLoaded = true;
                         })
-                    },3000);
+                    },3000);                                                        //refresh after 5 seconds
                 })
                 .catch(function (err) {
                         console.error((err && err.data && err.data.message)||'[Not available]');
@@ -251,7 +247,6 @@ Controller that handles
                 angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#ffffff');
                 angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80d4ff');
                 $scope.selectTeam(matchID, teamID, teamName);
-                console.log("Selected team id ",teamID," for match ID ",matchID);
             }
         }
 

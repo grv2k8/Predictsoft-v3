@@ -31,7 +31,9 @@ router.get('/v1/games/active',PSMatch.fetchActiveMatches);          //get all ac
 router.get('/v1/game/:id',PSMatch.fetchMatchDetails);               //get details of a match
 
 //prediction route
+router.get('/v1/games/prediction',PSMatch.getPredictionsForActiveMatches)
 router.post('/v1/games/predict',PSMatch.addOrUpdatePredictions);
 
+router.get('/v1/scores',PSMatch.getScoreboardList);
 
 module.exports = router;

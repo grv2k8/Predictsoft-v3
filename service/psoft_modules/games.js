@@ -13,7 +13,6 @@ var TFGames = {
     //GET details about all upcoming matches
     fetchActiveMatches : function(req,res){
         var _response = {};
-        //_response.games = [];
         database.query(
             queries.getUpcomingMatchDetails(),
             database.DBConnection.QueryTypes.SELECT
@@ -65,8 +64,6 @@ var TFGames = {
             res.end();
             return;
         });
-        
-        
     },
 
     /* POST prediction(s) for a user */
@@ -110,6 +107,64 @@ var TFGames = {
             res.end();
             return;
         });
+    },
+
+    /* GET list of predictions */
+    getPredictionsForActiveMatches : function(req,res){
+        var _response = {};
+        database.query(
+            queries.getPredictionListForActiveMatches(req.psoftUser.ID),
+            database.DBConnection.QueryTypes.SELECT
+        )
+        .then(gamesResponseObject=>{
+            _response = {
+                success         : true,
+                message         : "OK" ,
+                /*number_of_games : (gamesResponseObject && gamesResponseObject.length)|| 0,
+                match_date      : (gamesResponseObject && gamesResponseObject[0] && gamesResponseObject[0].GameDate) || '', */
+                results         : (gamesResponseObject)||{} 
+            }
+            res.status(200).json(_response);
+            res.end();
+            return;
+        })
+        .catch(function(error){
+            log.error('TFGames:getPredictionsForActiveMatches() - Cannot fetch upcoming games. Details: ',error);
+            _response = {
+                success: false,
+                message: 'The request could not be completed. The mods will be notified.'
+            }
+            res.status(500).json(_response);
+            res.end();
+            return;
+        })
+    },
+
+    /* GET scoreboard list */
+    getScoreboardList: function(req,res){
+        database.User.findAll({
+            attributes  : ['userID','name','points'],
+            order       : 'points Desc'
+        })
+        .then(scoreList=>{
+            
+            res.status(200).json({
+                success : true,
+                message : "OK",
+                results : scoreList
+            });
+            res.end();
+            return;
+        })
+        .catch(err =>{
+            log.warn("Error trying to fetch scoreboard. Details: ",err);
+            res.status(500).json({                
+                success : false,
+                message : "Could not fetch scoreboard"
+            });
+            res.end();
+            return;
+        })
     }
 }
 
