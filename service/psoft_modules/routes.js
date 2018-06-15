@@ -40,4 +40,11 @@ router.get('/v1/scores',PSMatch.getScoreboardList);
 router.get('/v1/player/:id/history',PSUsers.getPlayerPredictionHistory);
 router.get('/v1/player/points',PSUsers.getUserPoints);
 
+
+/* admin routes */
+//router.put('/v1/admin/lock/:id',"");                                //lock match by ID
+router.post('/v1/admin/update',PSUtils.updateScores);                   //update scores for a match
+router.put('/v1/admin/lock/active',PSUtils.lockNextActiveMatch);        //lock all active matches
+router.put('/v1/admin/activate',PSUtils.activateNextDayMatches);        //manually mark upcoming matches (in the next 1 day) as active
+
 module.exports = router;
