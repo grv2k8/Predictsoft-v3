@@ -180,8 +180,92 @@ var Utils = module.exports = {
     isEmptyString: function (str) {
         return (this.isEmptyObject(str) || str === '');
     },
-    parseAuthToken(bearer_token) {
+    parseAuthToken: function(bearer_token) {
         var words = bearer_token.split(' ');
         return words[1];
+    },
+    lockNextActiveMatch: function(){
+      log.info("Manual lock mode triggered...");
+        //var SP_query = "CALL lock_tables('" + threshold + "');";
+        //return sqlConn.query(SP_query);
+        return database.Game.update(
+            { isLocked: 1 },
+            {returning: true, where: {isActive: 1} }
+        )
+            .then(function([updateGame,rowsUpdated]) {
+                //console.log(">>",updatedGame);
+                Utils.Log.info("##Updated rows: ",rowsUpdated);
+                res.status(200).json({
+                    status  : true,
+                    message : rowsUpdated + ' rows were updated'
+                });
+                res.end();
+                return;
+            })
+            .catch(function(err){
+                Utils.Log.error("Unable to manually lock active match(es). Details: \r\n",JSON.stringify(err));
+                res.status(200).json({
+                    status  : false,
+                    message : 'Could not update match(es). Please check error log.'
+                });
+                res.end();
+                return;
+            });
+    },
+    activateNextDayMatches: function(req,res){
+        Utils.Log.info("Manually running stored procedure to activate next day's match(es)");
+        Utils.Database.query('CALL sp_activate_next_match();')
+            .then(function(){
+                res.status(200).json({
+                    success : true,
+                    message : "Next day's match(es) activated successfully!"
+                });
+                res.end();
+                return;
+            })
+            .catch(err =>{
+                log.warn("Could not lock next day's match(es). Details: \r\n",JSON.parse(err));
+                res.status(500).json({
+                    success         : true,
+                    message         : "Could not activate next day's match.",
+                    error_details   : err
+                });
+                res.end();
+                return;
+            });
+    },
+    updateScores : function(req,res){
+        if(!req.body || !req.body.match_id || !req.body.winning_team_id){
+            res.status(500).json({
+                success : true,
+                message : "Invalid or missing parameter(s)"
+            });
+            res.end();
+            return;
+        }
+        Utils.Log.info("Updating match ID "+req.body.match_id+", winning team ID: " + req.body.winning_team_id);
+        Utils.Database.query('CALL sp_update_scores(' + req.body.match_id + ',' + req.body.winning_team_id + ');')
+            .then(function(){
+                res.status(200).json({
+                    success         : true,
+                    message         : "Updated successfully!",
+                    match_id        : req.body.match_id,
+                    winning_team_id : req.body.winning_team_id
+                });
+                res.end();
+                return;
+            })
+            .catch(err =>{
+            log.warn("Could not update score for match ID " + req.body.match_id + ". Details: \r\n",JSON.parse(err));
+            res.status(500).json({
+                success         : true,
+                message         : "Could not update scores",
+                match_id        : req.body.match_id,
+                winning_team_id : req.body.winning_team_id,
+                error_details   : err
+            });
+            res.end();
+            return;
+        });
     }
 };
