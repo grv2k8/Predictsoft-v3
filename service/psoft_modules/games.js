@@ -142,10 +142,14 @@ var TFGames = {
 
     /* GET scoreboard list */
     getScoreboardList: function(req,res){
-        database.User.findAll({
+        /* database.User.findAll({
             attributes  : ['userID','name','points'],
             order       : 'points Desc'
-        })
+        }) */
+        database.query(
+            queries.getUserScores(),
+            database.DBConnection.QueryTypes.SELECT
+        )
         .then(scoreList=>{
             
             res.status(200).json({

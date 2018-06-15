@@ -59,6 +59,10 @@ body {
     text-transform: uppercase;
 }
 
+.highlight-team {
+    text-transform: uppercase;
+}
+
 .btn-light-blue {
     background-color: #82b1ff !important;
     color: #fff !important;

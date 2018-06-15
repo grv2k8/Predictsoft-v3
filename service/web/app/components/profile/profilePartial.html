@@ -13,23 +13,23 @@
 	  							<th>Match Date</th>
 	  							<th>Team 1</th>
 	  							<th>Team 2</th>
-	  							<th>Predicted team</th>
-	  							<th>Winner</th>
+	  							<th>Predicted Team</th>
+	  							<th>Winning Team</th>
 	  							<!--<th>Result</th>-->
 	  							<th>Points</th>
 	  						</tr>
 	  					</thead>
 	  					<tbody>
 	  						<tr class="text-left" ng-repeat="x in gameHistory">
-	  							<td>{{$index+1}}</td>
-	  							<td>{{x.match_date | date:'MM-dd-yyyy'}}</td>
-	  							<td>{{x.team1}}</td>
-	  							<td>{{x.team2}}</td>
-	  							<td>{{x.predicted_team}}</td>
-	  							<td>{{x.winning_team}}</td>
+	  							<td class="highlight-team">{{$index+1}}</td>
+	  							<td class="highlight-team">{{x.match_date | date:'MM-dd-yyyy'}}</td>
+	  							<td class="highlight-team">{{x.team1}}</td>
+	  							<td class="highlight-team">{{x.team2}}</td>
+								<td><span class="highlight-team" ng-class="(x.predicted_team===x.winning_team) ? 'label label-success' : 'label label-warning'">{{x.predicted_team}}</span></td>
+								<td class="highlight-team">{{x.winning_team}}</td>
 	  							<!--<td>{{x.result}}</td>-->
-	  							<!--<td>{{getDisplayPoints(x.result)}}</td>-->
-								<td>{{x.game_weight}}</td>
+	  							<td>{{getDisplayPoints(x.predicted_team, x.winning_team)}}</td>
+								<!--<td>{{x.game_weight}}</td>-->
 	  						</tr>
 	  					</tbody>
 	  				</table>				  					

@@ -52,15 +52,18 @@
                     }
                 })
                 .catch(function (err) {
-                    console.log("Unable to fetch user prediction history for userID " + userID + " . Details:\n" + err)
+                    console.log("Unable to fetch user prediction history for userID " + userID + " . Details:\n" + JSON.parse(err));
                 })
         };
 
-        $scope.getDisplayPoints = function (resultStr)
+        $scope.getDisplayPoints = function (predicted_team_id, winning_team_id)
         {
-            if (resultStr == "[TBD]") return "[TBD]";
-            if (resultStr == "WIN") return "3";
-            return "0";
+            if(winning_team_id === ""){
+                return "[TBD]"
+            }
+            else{
+                return (predicted_team_id == winning_team_id)? "3":"0";
+            }
         }
 
 

@@ -160,7 +160,7 @@ var TFUsers = {
             return;
         })
         .catch(error=>{
-            log.error('Users:getPlayerPredictionHistory() - Cannot fetch prediction history for player ID ' + req.parms.id + ' games. Details: ',error);
+            log.error('Users:getPlayerPredictionHistory() - Cannot fetch prediction history for player ID ' + req.params.id + ' games. Details: ',error);
             _response = {
                 success: false,
                 message: 'The request could not be completed. The mods will be notified.'

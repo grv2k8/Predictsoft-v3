@@ -48,7 +48,7 @@ module.exports = {
                     "G.points AS game_weight, " +
                     "(SELECT Name FROM teams WHERE ID = G.Team1) AS team1, " +
                     "(SELECT Name FROM teams WHERE ID = G.Team2) AS team2, " +
-                    "(SELECT Name FROM teams WHERE ID = p.predictedTeamID) AS predicted_team, " +
+                    "(SELECT Name FROM teams WHERE ID = P.predictedTeamID) AS predicted_team, " +
                     "(SELECT Name FROM teams WHERE ID = G.WinningTeamID) AS winning_team  " +
                 "FROM predictions P, games G, users U " +
                 "WHERE " +
@@ -56,5 +56,16 @@ module.exports = {
                     "G.ID = P.matchID AND " +
                     "U.userID = P.playerID AND " + 
                     "P.playerID = " + userID
+    },
+    getUserScores: function(userID){
+        return "SELECT u.userID, u.name, COUNT(*) * 3 as points " +
+    "FROM predictions p, users u, teams t, games m " +
+    "WHERE u.userid = p.playerID and "+
+        "t.ID = p.predictedTeamID and "+
+        "m.ID = p.matchID and "+
+        "(SELECT teams.Name FROM teams WHERE teams.ID = p.predictedTeamID) = (SELECT teams.Name FROM teams WHERE teams.ID = m.WinningTeamID) and " + 
+        "m.isActive=0 " +
+    "GROUP BY u.userid "+
+    "ORDER BY points DESC;";
     }
 };
