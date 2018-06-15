@@ -52,7 +52,7 @@
                     }
                 })
                 .catch(function (err) {
-                    console.log("Unable to fetch user prediction history for userID " + userID + " . Details:\n" + err)
+                    console.log("Unable to fetch user prediction history for userID " + userID + " . Details:\n" + JSON.parse(err));
                 })
         };
 
