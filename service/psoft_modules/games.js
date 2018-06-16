@@ -40,7 +40,36 @@ var TFGames = {
             return;
         })
     },
-    
+
+    //GET the next/upcoming active match (config.lock_threshold interval)
+    fetchNextActiveMatch: function(req,res){
+        var _response = {};
+        database.query(
+            queries.getNextUpcomingMatchDetail(util.Config.psManualLockThreshold,util.Config.psTZOffset),   //util.Config.psTZOffset),
+            database.DBConnection.QueryTypes.SELECT)
+            .then(gameResponseObject=>{
+                _response = {
+                    success         : true,
+                    message         : "OK",
+                    data            : gameResponseObject[0] || [],
+                    number_of_rows  : gameResponseObject.length
+                };
+                res.status(200).json(_response);
+                res.end();
+                return;
+            })
+            .catch(error=>{
+                log.error('TFGames:fetchNextActiveMatch() - Cannot fetch the upcoming game in the next ' + util.Config.psManualLockThreshold + ' minutes. Details: ',error);
+                _response = {
+                    success: false,
+                    message: 'The request could not be completed. The mods will be notified.'
+                }
+                res.status(500).json(_response);
+                res.end();
+                return;
+            });
+    },
+
     //GET details of one match
     fetchMatchDetails : function(req,res){
         database.query(
@@ -170,7 +199,7 @@ var TFGames = {
             return;
         })
     }
-}
+};
 
 var addOrUpdatePrediction = function(userID, userName, matchID, predictedTeamID, predictedTeamName)
 {

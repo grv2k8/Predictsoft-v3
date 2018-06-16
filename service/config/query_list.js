@@ -68,10 +68,27 @@ module.exports = {
     "GROUP BY u.userid "+
     "ORDER BY points DESC;";
     },
-    //admin functions
-    lockUpcomingActiveMatch: function(lock_threshold){
+    getNextUpcomingMatchDetail: function(search_window_in_minutes, server_timezone_offset){
+        if(!server_timezone_offset){
+            server_timezone_offset = '+00:00';       //GMT if not specified
+        }
+
+        return "SELECT "+
+                "g.* " +
+                ",CONVERT_TZ(NOW(),@@session.time_zone, '" + server_timezone_offset + "') as match_date_in_est " +
+                //"g.matchTime as match_time, " +
+                //"CONVERT_TZ(NOW(),@@session.time_zone, '" + server_timezone_offset + "') as server_time_in_est, " +
+                //"TIME(NOW()) as now_time, " +
+                //"TIME(DATE_ADD(NOW(),INTERVAL " + search_window_in_minutes + " MINUTE)) as next_" + search_window_in_minutes + "_min_time, g.* " +
+                "FROM games g " +
+                "WHERE g.matchDate = DATE(NOW()) AND "+
+                "g.isActive = 1 AND " +
+                "g.matchTime <= TIME(DATE_ADD(CONVERT_TZ(NOW(),@@session.time_zone, '" + server_timezone_offset + "'),INTERVAL " + search_window_in_minutes + " MINUTE));";
+    },
+    lockUpcomingActiveMatch: function(lock_threshold, server_timezone_offset){
         return "UPDATE games " +
         "SET isLocked = 1 " +
-        "WHERE matchDate = DATE(NOW()) AND matchTime <= TIME(DATE_ADD(NOW(),INTERVAL '" + lock_threshold + "' MINUTE));"
+        "WHERE matchDate = DATE(NOW()) AND " +
+        "matchTime <= TIME(DATE_ADD(CONVERT_TZ(NOW(),@@session.time_zone, '" + server_timezone_offset + "'),INTERVAL " + lock_threshold + " MINUTE));";
     }
 };

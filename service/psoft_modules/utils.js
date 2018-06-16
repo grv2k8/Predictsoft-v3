@@ -58,6 +58,7 @@ var Utils = module.exports = {
         psIsRegistrationActive: false,
         psRunMode: '',
         psManualLockThreshold: '',
+        psTZOffset: 0,     //timezone offset (use to convert time in DB into this offset when running compare queries
         /* init(): if this function fails, the application will quit with a message to the console */
         init: function () {
             //read and fill self from config files
@@ -117,6 +118,9 @@ var Utils = module.exports = {
                         }
                     }
                 );
+                //if date/time on server is in EST, use 'US/Eastern' (or -04:00' in Windows) to bring it to UTC; useful for comparing (and locking, etc)
+                this.psTZOffset = psoftConfig.server_timezone_offset || '00:00';        //UTC by default
+
                 //...then load DB models
                 Utils.Database.loadModels(Utils.Database.DBConnection);
                 Utils.Log.info('Utils loaded...');
@@ -187,17 +191,14 @@ var Utils = module.exports = {
         return words[1];
     },
     lockNextActiveMatch: function(req,res){
-        console.log(">>",Utils.Config.psManualLockThreshold);
-        //var manual_lock_query = 'CALL sp_lock_next_match(' + Utils.Config.psManualLockThreshold + ');';
-        Utils.Database.query(Utils.Database.QueryList.lockUpcomingActiveMatch(Utils.Config.psManualLockThreshold))
-        //Utils.Database.query("CALL sp_lock_next_match('15');")
+        Utils.Database.query("CALL sp_lock_next_match('" + Utils.Config.psManualLockThreshold + "','" + Utils.Config.psTZOffset + "');")
             .then(function(result){
-                console.log(result);
                 Utils.Log.info('Manual lock has run successfully, requested by user ',req.psoftUser.name);
                 res.status(200).json({
                     success         : true,
                     message         : "Upcoming active matches have been locked!",
-                    lock_threshold  :  Utils.Config.psManualLockThreshold + ';'
+                    lock_threshold  :  Utils.Config.psManualLockThreshold,
+                    server_offset_tz: Utils.Config.psTZOffset
                 });
                 res.end();
                 return;

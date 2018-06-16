@@ -29,6 +29,7 @@ router.get('/v1/auth/ping',PSUtils.ping);
 //game/match route
 router.get('/v1/games/active',PSMatch.fetchActiveMatches);          //get all active (upcoming) matches
 router.get('/v1/game/:id',PSMatch.fetchMatchDetails);               //get details of a match
+router.get('/v1/games/next',PSMatch.fetchNextActiveMatch);
 
 //prediction route
 router.get('/v1/games/prediction',PSMatch.getPredictionsForActiveMatches)
@@ -46,5 +47,7 @@ router.get('/v1/player/points',PSUsers.getUserPoints);
 router.post('/v1/admin/update',PSUtils.updateScores);                   //update scores for a match
 router.put('/v1/admin/lock/active',PSUtils.lockNextActiveMatch);        //lock all active matches
 router.put('/v1/admin/activate',PSUtils.activateNextDayMatches);        //manually mark upcoming matches (in the next 1 day) as active
+
+
 
 module.exports = router;
