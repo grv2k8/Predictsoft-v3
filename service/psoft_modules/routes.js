@@ -48,6 +48,4 @@ router.post('/v1/admin/update',PSUtils.updateScores);                   //update
 router.put('/v1/admin/lock/active',PSUtils.lockNextActiveMatch);        //lock all active matches
 router.put('/v1/admin/activate',PSUtils.activateNextDayMatches);        //manually mark upcoming matches (in the next 1 day) as active
 
-
-
 module.exports = router;

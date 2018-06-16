@@ -55,8 +55,16 @@ body {
     background-color: #f2ece3;
 }
 
+.locked-panel {
+    background-color: #b5b4b4;
+}
+
 .team-name-panel-header{
     text-transform: uppercase;
+}
+
+.locked-team-name{
+    color: #bdb4b4;
 }
 
 .highlight-team {
