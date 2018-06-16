@@ -67,5 +67,11 @@ module.exports = {
         "m.isActive=0 " +
     "GROUP BY u.userid "+
     "ORDER BY points DESC;";
+    },
+    //admin functions
+    lockUpcomingActiveMatch: function(lock_threshold){
+        return "UPDATE games " +
+        "SET isLocked = 1 " +
+        "WHERE matchDate = DATE(NOW()) AND matchTime <= TIME(DATE_ADD(NOW(),INTERVAL '" + lock_threshold + "' MINUTE));"
     }
 };
