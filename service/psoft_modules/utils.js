@@ -42,11 +42,10 @@ var Utils = module.exports = {
                     resolve(queryResponse);
                     return;
                 })
-            })
             .catch(e=>{
                 reject(e);
+                })
             })
-            
         }
     },
     Config: {
@@ -58,6 +57,8 @@ var Utils = module.exports = {
         psLogMode: '',
         psIsRegistrationActive: false,
         psRunMode: '',
+        psManualLockThreshold: '',
+        psTZOffset: 0,     //timezone offset (use to convert time in DB into this offset when running compare queries
         /* init(): if this function fails, the application will quit with a message to the console */
         init: function () {
             //read and fill self from config files
@@ -74,6 +75,8 @@ var Utils = module.exports = {
                 this.psIsRegistrationActive = psoftConfig.allow_registration || false;
                 this.psRunMode = psoftConfig.run_mode || 'N/A';
                 this.psLogLevel = psoftConfig.log_level || '';
+
+                this.psManualLockThreshold = psoftConfig.match_lock_threshold_in_minutes || '15';     //15 minute by default
 
                 //setup log config
                 this.psLogDir = psoftConfig.log_directory_name || 'psoftv3_logs';
@@ -115,6 +118,9 @@ var Utils = module.exports = {
                         }
                     }
                 );
+                //if date/time on server is in EST, use 'US/Eastern' (or -04:00' in Windows) to bring it to UTC; useful for comparing (and locking, etc)
+                this.psTZOffset = psoftConfig.server_timezone_offset || '00:00';        //UTC by default
+
                 //...then load DB models
                 Utils.Database.loadModels(Utils.Database.DBConnection);
                 Utils.Log.info('Utils loaded...');
@@ -184,8 +190,32 @@ var Utils = module.exports = {
         var words = bearer_token.split(' ');
         return words[1];
     },
-    lockNextActiveMatch: function(){
-      log.info("Manual lock mode triggered...");
+    lockNextActiveMatch: function(req,res){
+        Utils.Database.query("CALL sp_lock_next_match('" + Utils.Config.psManualLockThreshold + "','" + Utils.Config.psTZOffset + "');")
+            .then(function(result){
+                Utils.Log.info('Manual lock has run successfully, requested by user ',req.psoftUser.name);
+                res.status(200).json({
+                    success         : true,
+                    message         : "Upcoming active matches have been locked!",
+                    lock_threshold  :  Utils.Config.psManualLockThreshold,
+                    server_offset_tz: Utils.Config.psTZOffset
+                });
+                res.end();
+                return;
+            })
+            .catch(function(err){
+            Utils.Log.warn("Could not manually lock upcoming active match(es). Details: \r\n",err);
+                res.status(500).json({
+                    success         : true,
+                    message         : "Manual lock attempt for active match(es) failed.",
+                    error_details   : err
+                });
+                res.end();
+                return;
+            });
+    },
+    lockAllActiveMatches: function(){
+      log.info("Manual lock mode triggered for ALL ACTIVE MATCHES!!");
         //var SP_query = "CALL lock_tables('" + threshold + "');";
         //return sqlConn.query(SP_query);
         return database.Game.update(

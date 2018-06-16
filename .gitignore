@@ -3,5 +3,5 @@
 /service/config/jwtkey.js
 /service/node_modules/
 /service/psoftv3_logs/
-
 /service/web/node_modules
+/.idea
