@@ -91,6 +91,19 @@
                                     <span class="h5" ng-if="predictionGridLoaded">/ {{getRemainingPlayerCount()}} predictions left </span>
                                 </span>
                             </div>
+                            <div class="row">
+                                <div class="col-sm-4" style="padding-left: 30px;">Filter:</div>
+                                <div class="col-sm-8">
+                                    <select ng-model="ddGameSelected" ng-options="x for x in games" ng-change="filterPredictionList({{x.MatchID}})">
+                                        <!-- <option>All Matches</option> -->
+                                        <!-- <option ng-repeat="x in games" value="{{x.MatchID}}">{{x.GameTime}} - {{x.Team1Name}} vs {{x.Team2Name}}</option> -->
+                                        <!-- <option  value="">Volvo</option>
+                                        <option value="saab">Saab</option>
+                                        <option value="mercedes">Mercedes</option>
+                                        <option value="audi">Audi</option> -->
+                                    </select>
+                                </div>
+                            </div>
                             <div ng-hide="predictionGridLoaded"><span class="h5"><img src="/web/assets/img/loading.gif" /> Refreshing...</span></div>
                             <div ng-show="predictionGridLoaded" ui-grid="predictionGrid"></div>
                         </div>

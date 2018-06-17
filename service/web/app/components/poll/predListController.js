@@ -31,18 +31,18 @@ Controller that retrieves prediction list for current match from submitted entri
 
         //get Prediction from API
         gameService.getPredictionList($scope.user_token)
-            .then(function (response) {
-                if (!response || !response.data || !response.data.success) {
-                    throw "There was an error trying to fetch prediction data from the web service. Please try again later";
-                }
-                var predictionListObject = response.data;                
+        .then(function (response) {
+            if (!response || !response.data || !response.data.success) {
+                throw "There was an error trying to fetch prediction data from the web service. Please try again later";
+            }
+            var predictionListObject = response.data;                
 
-                gameService.setRemainingPredictionCount(response.data.rem_predictions);
-                gameService.fillPredictionGrid(predictionListObject.results);      //for dynamically refreshing the prediction grid
-            })
-            .catch(function (err) {
-                console.error("Unable to fetch prediction table. Details:\n" + err);
-            })
+            gameService.setRemainingPredictionCount(response.data.rem_predictions);
+            gameService.fillPredictionGrid(predictionListObject.results);      //for dynamically refreshing the prediction grid
+        })
+        .catch(function (err) {
+            console.error("Unable to fetch prediction table. Details:\n" + err);
+        });
     }
 
 

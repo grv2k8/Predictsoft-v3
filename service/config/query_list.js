@@ -22,7 +22,7 @@ module.exports = {
                     "T2.ID as Team2ID, T2.Name as Team2Name, T2.FlagUrl as Team2LogoUrl, " +
                     "G.points as GamePoints, G.gameType as GameType, G.isLocked as IsGameLocked, G.isHidden as IsGameHidden, G.matchDate as GameDate, G.matchTime as GameTime " +
                 "FROM teams T1, teams T2, games G " +
-                "WHERE G.Team1 = T1.ID and G.Team2 = T2.ID AND G.isActive = 1;"
+                "WHERE G.Team1 = T1.ID and G.Team2 = T2.ID AND G.isActive = 1 ORDER BY GameTime;"
     },
     addPredictionForMatch: function(userID, matchID, predictedTeamID){
         return "INSERT INTO predictions(playerID, matchID, predictedTeamID) "+
