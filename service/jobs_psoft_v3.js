@@ -37,7 +37,7 @@ var lock_time_table = [];
 /*========================== SCHEDULER =====================================*/
 //function to check and lock matches; runs three times, as according to WC 2018 times (1100 hrs and 1600 hrs EST/server times are in EST)
 //also remember to change value for 'match_lock_threshold_in_minutes' in config file
-var lockMatch1 = schedule.scheduleJob('Lock1','55 10 * * *',function(){      //1 hour prior to 10:30 am EST
+var lockMatch1WithEmail = schedule.scheduleJob('Lock1','55 10 * * *',function(){      //1 hour prior to 10:30 am EST
     lockMatch(lock_threshold)
         .then(function () {
             var lock_done_msg = "*** Upcoming match has been locked successfully at 10:55 AM EDST by psoft scheduler.";
@@ -48,25 +48,8 @@ var lockMatch1 = schedule.scheduleJob('Lock1','55 10 * * *',function(){      //1
                     return;
                 })*/
         })
-        .error(function(err){
+        .catch(function(err){
             log.info("Error trying to lock match by schedule at 9:30 AM EDST. Description: ",err);
-            return;
-        });
-});
-
-var lockMatch2 = schedule.scheduleJob('30 5 * * *',function(){     //15 min prior to 6:30 am EST
-    lockMatch(lock_threshold)
-        .then(function () {
-            var lock_done_msg = "*** Upcoming match has been locked successfully at 5:30 AM EDST by psoft scheduler.";
-            log.info(lock_done_msg);
-            /*getPredictionList()
-                .then(function (pred_list) {
-                    sendEmailWithPredictions(pred_list);
-                    return;
-                })*/
-        })
-        .error(function(err){
-            log.info("Error trying to lock match at 5:30 AM EDST. Description: ",err);
             return;
         });
 });
@@ -128,7 +111,7 @@ var addLockSchedule = function(lockTime){
                     reject("The lock scheduler encountered an error trying to lock match at " + lockTime + " hrs EDST. Description: ",err);
                     return;
                 });
-        })
+        });
     });
 };
 
@@ -145,4 +128,3 @@ app.listen(psoft_job_port);
 log.info("Predictsoft automated jobs service started on port: " + psoft_job_port);
 log.info("===================================");
 initLockTimes();
-lockMatch1.name = "LockFirstMatch";
