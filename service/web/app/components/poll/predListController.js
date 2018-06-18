@@ -11,7 +11,8 @@ Controller that retrieves prediction list for current match from submitted entri
         $scope.lockDown = false;
         $scope.user_token = authService.getToken();
         $scope.predictionGrid = gameService.getPredictionGrid();
-        /*$scope.predictionGrid = {
+        $scope.predictionData = {};
+       /*$scope.predictionGrid = {
             enableColumnMenus: false,
             columnDefs: [
                 { field: 'href',
@@ -35,14 +36,27 @@ Controller that retrieves prediction list for current match from submitted entri
             if (!response || !response.data || !response.data.success) {
                 throw "There was an error trying to fetch prediction data from the web service. Please try again later";
             }
-            var predictionListObject = response.data;                
-
+            $scope.predictionData = response.data.results;
             gameService.setRemainingPredictionCount(response.data.rem_predictions);
-            gameService.fillPredictionGrid(predictionListObject.results);      //for dynamically refreshing the prediction grid
+            gameService.fillPredictionGrid($scope.predictionData);      //for dynamically refreshing the prediction grid
         })
         .catch(function (err) {
             console.error("Unable to fetch prediction table. Details:\n" + err);
         });
+
+        $scope.filterPredictionList = function(selectedMatchItem){
+           
+            if(!selectedMatchItem){
+                gameService.fillPredictionGrid($scope.predictionData);
+                return;
+            }
+            var gameObject = JSON.parse(selectedMatchItem || {});
+            var filtered_list = $scope.predictionData && $scope.predictionData.filter(
+                                game=>((game.gameID === gameObject.MatchID))
+                            );
+
+            gameService.fillPredictionGrid(filtered_list);
+        }
     }
 
 

@@ -141,7 +141,6 @@ Controller that handles
 
                     $scope.matchType = ($scope.games[0].GameType ) || '';
                     $scope.matchPoints =   $scope.games[0].GamePoints || 0;
-                    console.log("$$$",$scope.games);
                 }
                 return;
             })
@@ -264,11 +263,6 @@ Controller that handles
                 }
             }
         };
-
-        $scope.filterPredictionList = function(matchID){
-            console.log($scope.ddGameSelected);
-            console.log("..",$scope.ddGameSelected," -- ",matchID);           
-        }
 
     }
 })();
