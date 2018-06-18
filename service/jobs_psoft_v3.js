@@ -15,6 +15,8 @@ var moment = require('moment');
 
 var schedule = require('node-schedule');
 
+var mysqlDump = require('mysqldump');
+
 const utils = require('./psoft_modules/utils');
 const config = utils.Config;
 config.init();                      //need to init config before loading log and DB handles
@@ -26,10 +28,12 @@ var database = utils.Database;
 /*==========================Load config===================================*/
 
 const psoft_config_parameters = require('./config/psoft_config.js');
+const db_config_parameters = require('./config/dbconfig.js');
 
 const psoft_job_port = psoft_config_parameters.r00t_port;         //psoft_job_port that predictsoft r00t will run on
 const lock_threshold = psoft_config_parameters.match_lock_threshold_in_minutes;        //look-ahead time in minutes
 const tz_offset = psoft_config_parameters.server_timezone_offset || '+00:00';
+
 
 
 var lock_time_table = [];
@@ -93,6 +97,27 @@ var initLockTimes = function(){
         });
 };
 
+var backupPsoftDatabase = function(){
+    var now_moment = moment().format('YYYY-MM-DD HH:mm:ss').trim();
+    mysqlDump({
+        host: db_config_parameters.host,
+        user: db_config_parameters.user,
+        password: db_config_parameters.password,
+        database: db_config_parameters.database,
+        dest:'./backup-'+ now_moment + '.sql' // destination file
+    },function(err){
+        // create data.sql file;
+    })
+    /* .then(function(done){
+        console.log(done);
+    })
+    .catch(function(err){
+        console.error(err);
+        return;
+    }); */
+    log.info("Successfully backed up database on "+now_moment);
+    return;
+}
 
 /* private methods */
 var lockMatch = function(threshold){
@@ -146,3 +171,4 @@ log.info("Predictsoft automated jobs service started on port: " + psoft_job_port
 log.info("===================================");
 initLockTimes();
 lockMatch1.name = "LockFirstMatch";
+backupPsoftDatabase();
