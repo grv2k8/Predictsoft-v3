@@ -144,8 +144,12 @@ Controller that handles
                 }
                 return;
             })
-				.catch(function (err) {
-                $scope.submitResponseERR = err;
+            .catch(function (err) {
+                if(err.data && err.data.message === "Token Expired"){
+                    //expired token, redirecting to login
+                    $location.path("/login");
+                }
+                $scope.submitResponseERR = "Error trying to get match(es) data. The admin will be notified.";
                 console.log("ERROR: " + err);
                 return;
             })
@@ -200,11 +204,14 @@ Controller that handles
                     },3000);                                                        //refresh after 5 seconds
                 })
                 .catch(function (err) {
-                        console.error((err && err.data && err.data.message)||'[Not available]');
-                        $scope.submitResponseERR = "There was an error trying to send the prediction data. Please try again later";
-                        $scope.is_valid = false;
-                    })
-                }
+                    if(err.data && err.data.message === "Token Expired"){
+                        //expired token, redirecting to login
+                        $location.path("/login");
+                    }    
+                    $scope.submitResponseERR = "There was an error trying to send the prediction data. Please try again later";
+                    $scope.is_valid = false;
+                })
+            }
         };
         
         //add each match's predictions inside a JSON object, to send back to server
@@ -237,8 +244,6 @@ Controller that handles
                         teamName: teamName
                     });
             }
-            
-            //console.log(angular.toJson($scope.selection, true));
             return;
         };
 

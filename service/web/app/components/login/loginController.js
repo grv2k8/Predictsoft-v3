@@ -17,7 +17,7 @@
                             if (authService.usrObj.points != response.data.points) {
                                 //update score and storage object
                                 authService.usrObj.points = response.data.points;
-                                authService.saveSession();      //update score in saved session
+                                authService.saveSession(authService.usrObj);      //update score in saved session
                             }
                         }
                     });

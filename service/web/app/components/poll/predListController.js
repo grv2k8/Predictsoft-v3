@@ -41,6 +41,10 @@ Controller that retrieves prediction list for current match from submitted entri
             gameService.fillPredictionGrid($scope.predictionData);      //for dynamically refreshing the prediction grid
         })
         .catch(function (err) {
+            if(err.data && err.data.message === "Token Expired"){
+                //expired token, redirecting to login
+                $location.path("/login");
+            }
             console.error("Unable to fetch prediction table. Details:\n" + err);
         });
 

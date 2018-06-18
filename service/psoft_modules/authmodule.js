@@ -90,7 +90,7 @@ var auth = {
 
 /* Generate a token that expires in 24 hours */
 function genToken(userObject) {
-    var expires = expiresIn(1); // 1 day
+    var expires = expiresIn(60); // 60 days
     var token = jwt.encode({
         email   : userObject.email,
         name    : userObject.name,

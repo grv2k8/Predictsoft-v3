@@ -28,6 +28,7 @@ Controller that handles leaderboard view
         //get leaderboard for scores
         gameService.getLeaderboardScores(authService.getToken())
             .then(function (response) {
+
                 var scoreListObject = response.data;
                 if (response == null) {
                     throw "There was an error trying to connect to the web service. Please try again later";
@@ -43,7 +44,10 @@ Controller that handles leaderboard view
                 }
             })
             .catch(function (err) {
-                console.log("Unable to fetch score table. Details:\r\n" + angular.toJson(err));
+                if(err.data && err.data.message === "Token Expired"){
+                    //expired token, redirecting to login
+                    $location.path("/login");
+                }
                 return;
             })
 	}
