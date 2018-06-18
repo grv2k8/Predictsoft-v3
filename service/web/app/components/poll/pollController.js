@@ -246,7 +246,10 @@ Controller that handles
                         teamName: teamName
                     });
             }
-            if($scope.selection.length === $scope.games.length){
+
+            var lockedGamesCount = ($scope.games && $scope.games.filter(games=>(games.IsGameLocked === 1)).length) || 0;
+
+            if(($scope.selection.length + lockedGamesCount) === $scope.games.length){
                 $scope.allValidPredictionsReceived = true;
             }
             else{
