@@ -24,9 +24,7 @@
                         <div class="row h3 text-center" ng-show="matchDate">Games for {{matchDate | date:'MMM d, yyyy'}}</div>
                         <div class="row h3 text-center" ng-hide="matchDate">Upcoming games</div>
                         <div class="row h5 text-center">(<span class="h4"><strong>{{matchPoints}}</strong></span> points/game)</div>
-
                         <div class="row" ng-repeat="x in games">
-
                             <div class="row">
                                 <div class="text-center h5 ">
                                     <strong>
@@ -68,7 +66,10 @@
                         </div>
                         <div ng-hide="nogames || loadingGames" class="col-md-12" style="padding-top: 20px;">
                             <div class="col-sm-4"></div>
-                            <div class="col-sm-4"><button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="submitPoll()">Submit</button>
+                            <div class="col-sm-4">
+                                <button class="btn btn-lg btn-primary btn-block" ng-class="{'psoft-submit-disabled-button':!allValidPredictionsReceived}" type="submit" ng-disabled=!allValidPredictionsReceived ng-click="submitPoll()">
+                                    Submit
+                                </button>
                             <div class="col-sm-4"></div>
                         </div>
                     </div>

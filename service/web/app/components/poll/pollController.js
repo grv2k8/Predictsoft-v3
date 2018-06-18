@@ -25,6 +25,8 @@ Controller that handles
 
         $scope.predictionGridLoaded = true;
 
+        $scope.allValidPredictionsReceived = false;
+
         $scope.matchDate = '';
 
         //$scope.matchDateTime = '';
@@ -243,6 +245,12 @@ Controller that handles
                         teamID: teamID,
                         teamName: teamName
                     });
+            }
+            if($scope.selection.length === $scope.games.length){
+                $scope.allValidPredictionsReceived = true;
+            }
+            else{
+                $scope.allValidPredictionsReceived = false;
             }
             return;
         };

@@ -40,6 +40,14 @@ body {
     text-transform: uppercase;
 }
 
+.psoft-submit-disabled-button {
+    background-color: gray !important;
+}
+
+.psoft-submit-button {
+    background-color: blue !important;
+}
+
 .navbar-default {
     background-color:#0f4583;
     background-image: none;
