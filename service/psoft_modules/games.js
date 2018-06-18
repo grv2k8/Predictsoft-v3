@@ -10,7 +10,7 @@ const database = util.Database;
 const queries = database.QueryList;
 
 var TFGames = {
-    //GET details about all upcoming matches
+    //GET details about all upcoming/active matches
     fetchActiveMatches : function(req,res){
         var _response = {};
         database.query(

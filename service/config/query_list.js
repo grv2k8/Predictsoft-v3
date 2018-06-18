@@ -22,7 +22,7 @@ module.exports = {
                     "T2.ID as Team2ID, T2.Name as Team2Name, T2.FlagUrl as Team2LogoUrl, " +
                     "G.points as GamePoints, G.gameType as GameType, G.isLocked as IsGameLocked, G.isHidden as IsGameHidden, G.matchDate as GameDate, G.matchTime as GameTime " +
                 "FROM teams T1, teams T2, games G " +
-                "WHERE G.Team1 = T1.ID and G.Team2 = T2.ID AND G.isActive = 1;"
+                "WHERE G.Team1 = T1.ID and G.Team2 = T2.ID AND G.isActive = 1 ORDER BY GameTime;"
     },
     addPredictionForMatch: function(userID, matchID, predictedTeamID){
         return "INSERT INTO predictions(playerID, matchID, predictedTeamID) "+
@@ -33,11 +33,11 @@ module.exports = {
         "SET predictedTeamID='" + predictedTeamID + "' WHERE  playerID=" + userID + " AND matchID=" + matchID + ";"
     },
     getPredictionListForActiveMatches: function(userID){
-        return "SELECT U.userID, U.name, (SELECT name from teams WHERE ID = P.predictedTeamID) as PredictedTeam " +
+        return "SELECT U.userID, U.name, G.ID as gameID, (SELECT name from teams WHERE ID = P.predictedTeamID) as PredictedTeam " +
             "FROM games G, predictions P, users U " +
             "WHERE G.isActive = 1 AND G.isHidden = 0 AND G.ID = P.matchID AND P.playerID = U.userID AND U.userID <> " + userID +
         " UNION ALL " +
-            "SELECT U.userID, U.name, (SELECT name from teams WHERE ID = P.predictedTeamID) as PredictedTeam " +
+            "SELECT U.userID, U.name, G.ID as gameID, (SELECT name from teams WHERE ID = P.predictedTeamID) as PredictedTeam " +
             "FROM games G, predictions P, users U " +
             "WHERE G.isActive = 1 AND G.ID = P.matchID AND P.playerID = U.userID AND U.userID = " + userID ;
     },

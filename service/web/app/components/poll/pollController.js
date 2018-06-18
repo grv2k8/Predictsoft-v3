@@ -110,9 +110,10 @@ Controller that handles
             //getPredictionTable();		//load prediction table
 
             //get list of active games
-            gameService.getNextGame(authService.getToken())
+            gameService.getAllActiveMatches(authService.getToken())
             .then(function (response) {
                 var gamesObject = response.data;
+                
                 $scope.loadingGames = false;            //hide the "Loading...." animation
                 if (!response || !gamesObject) {
                     var noRespErr = "There was an error trying to connect to the web service. Please try again later";
@@ -239,7 +240,7 @@ Controller that handles
             
             //console.log(angular.toJson($scope.selection, true));
             return;
-        }
+        };
 
         $scope.div_click = function(matchID, teamID, teamName, otherTeamID, isLocked){
 
@@ -261,7 +262,7 @@ Controller that handles
                     $scope.selectTeam(matchID, teamID, teamName);
                 }
             }
-        }
+        };
 
     }
 })();
