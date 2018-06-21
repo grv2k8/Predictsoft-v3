@@ -82,6 +82,11 @@ var initLockScheduler = function(){
 var initDatabaseBackupScheduler = function(){
     var backup_config_hours = psoft_config_parameters.db_backup_times;
 
+    if(!backup_config_hours || !backup_config_hours.length){
+        log.warn("Database backup time(s) is missing in the config file. The database will NOT be backed up on schedule.");
+        return;
+    }
+
     backup_config_hours.forEach(dbLockTime=>{
         //db_bkp_time_table.push(addLockSchedule(dbLockTime));
         db_bkp_time_table.push(addDBBackupSchedule(dbLockTime));
@@ -146,7 +151,7 @@ var getScheduleTimeFormat = function(hhmmTime){
 };
 
 //mysqldump section
-var sqlBackupFileFolder = __dirname + "/" + psoft_config_parameters.db_bkp_directory_name;
+var sqlBackupFileFolder = __dirname + "/" + (psoft_config_parameters.db_bkp_directory_name || 'psoft_backups');
 var sqlBackupFileFullPath =  sqlBackupFileFolder + "/psoft_db_fifawc_" +  moment().format('YYYY-MM-DD__HH_mm').trim() + '_hrs.sql';
 
 //create backup folder if it doesn't exist
