@@ -92,17 +92,6 @@ var initDatabaseBackupScheduler = function(){
         db_bkp_time_table.push(addDBBackupSchedule(dbLockTime));
         log.info("Added new database backup schedule at",dbLockTime,"hrs to the schedule list.");
     });
-
-                    //
-/*                     console.log(lockTime, ";", last_match_time,"CMP::",(last_match_time ===lockTime));
-                    console.log(moment(lockTime,"HH:mm:ss").isValid(), ";", last_match_time.isValid(),"CMP::",(last_match_time === moment(lockTime,"HH:mm:ss")));
-                    
-                    if(last_match_time === moment(lockTime,"HH:mm:ss")){
-                        console.log("Sdffsfds");
-                        //if the last match of the day was locked, backup the db automatically
-                        backupPsoftDatabase();
-                    }
- */                    
 };
 
 /* private methods */
@@ -152,35 +141,34 @@ var getScheduleTimeFormat = function(hhmmTime){
 
 //mysqldump section
 var sqlBackupFileFolder = __dirname + "/" + (psoft_config_parameters.db_bkp_directory_name || 'psoft_backups');
-var sqlBackupFileFullPath =  sqlBackupFileFolder + "/psoft_db_fifawc_" +  moment().format('YYYY-MM-DD__HH_mm').trim() + '_hrs.sql';
 
 //create backup folder if it doesn't exist
 if (!fs.existsSync(sqlBackupFileFolder)) {
     fs.mkdirSync(sqlBackupFileFolder);
 };
 
-var backupPsoftDatabase = function(){
+var backupPsoftDatabase = function(fullBackupFilePath){
     mysqlDump({
         host    : db_config_parameters.host,
         user    : db_config_parameters.user,
         password: db_config_parameters.password,
         database: db_config_parameters.database,
-        dest    : sqlBackupFileFullPath // destination file
+        dest    : fullBackupFilePath // destination file
     },function(err){
-        // create data.sql file;
     });
-    log.info("***psoft jobs has automatically backed up the app database to file: " + sqlBackupFileFullPath);
+    log.info("***psoft jobs has automatically backed up the app database to file: " + fullBackupFilePath);
     return;
 }
 
 var addDBBackupSchedule = function(backupTime){
+    var sqlBackupFileFullPath = '';
     return new Promise(function(resolve,reject){
         return schedule.scheduleJob('Backup-Psoft-Database-Job @ '+backupTime,getScheduleTimeFormat(backupTime),function(){
-            backupPsoftDatabase();
+            sqlBackupFileFullPath =  sqlBackupFileFolder + "/psoft_db_fifawc_" +  moment().format('YYYY-MM-DD__HH_mm').trim() + '_hrs.sql';
+            backupPsoftDatabase(sqlBackupFileFullPath);
         })
     });
 };
-
 
 app.listen(psoft_job_port);
 log.info("Predictsoft automated jobs service started on port: " + psoft_job_port);
