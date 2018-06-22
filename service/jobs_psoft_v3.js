@@ -78,22 +78,6 @@ var initLockScheduler = function(){
         });
 };
 
-//set up two backup schedules, one after the last match has been locked for the day, and the other one at midnight
-var initDatabaseBackupScheduler = function(){
-    var backup_config_hours = psoft_config_parameters.db_backup_times;
-
-    if(!backup_config_hours || !backup_config_hours.length){
-        log.warn("Database backup time(s) is missing in the config file. The database will NOT be backed up on schedule.");
-        return;
-    }
-
-    backup_config_hours.forEach(dbLockTime=>{
-        //db_bkp_time_table.push(addLockSchedule(dbLockTime));
-        db_bkp_time_table.push(addDBBackupSchedule(dbLockTime));
-        log.info("Added new database backup schedule at",dbLockTime,"hrs to the schedule list.");
-    });
-};
-
 /* private methods */
 var lockMatch = function(threshold){
     var SP_query = "CALL sp_lock_next_match(" + threshold + ",'" + config.psTZOffset + "');";
@@ -167,6 +151,22 @@ var addDBBackupSchedule = function(backupTime){
             sqlBackupFileFullPath =  sqlBackupFileFolder + "/psoft_db_fifawc_" +  moment().format('YYYY-MM-DD__HH_mm').trim() + '_hrs.sql';
             backupPsoftDatabase(sqlBackupFileFullPath);
         })
+    });
+};
+
+//set up two backup schedules, one after the last match has been locked for the day, and the other one at midnight
+var initDatabaseBackupScheduler = function(){
+    var backup_config_hours = psoft_config_parameters.db_backup_times;
+
+    if(!backup_config_hours || !backup_config_hours.length){
+        log.warn("Database backup time(s) is missing in the config file. The database will NOT be backed up on schedule.");
+        return;
+    }
+
+    backup_config_hours.forEach(dbLockTime=>{
+        //db_bkp_time_table.push(addLockSchedule(dbLockTime));
+        db_bkp_time_table.push(addDBBackupSchedule(dbLockTime));
+        log.info("Added new database backup schedule at",dbLockTime,"hrs to the schedule list.");
     });
 };
 
