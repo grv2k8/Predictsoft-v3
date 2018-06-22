@@ -162,7 +162,6 @@ var initDatabaseBackupScheduler = function(){
         log.warn("Database backup time(s) is missing in the config file. The database will NOT be backed up on schedule.");
         return;
     }
-
     backup_config_hours.forEach(dbLockTime=>{
         //db_bkp_time_table.push(addLockSchedule(dbLockTime));
         db_bkp_time_table.push(addDBBackupSchedule(dbLockTime));
