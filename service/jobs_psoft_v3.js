@@ -49,7 +49,7 @@ var lockMatch1_OLD_useforEmailCode = schedule.scheduleJob('Lock1','55 10 * * *',
                     return;
                 })*/
         })
-        .error(function(err){
+        .catch(function(err){
             log.info("Error trying to lock match by schedule at 9:30 AM EDST. Description: ",err);
             return;
         });
@@ -128,7 +128,7 @@ var addLockSchedule = function(lockTime){
                     reject("The lock scheduler encountered an error trying to lock match at " + lockTime + " hrs EDST. Description: ",err);
                     return;
                 });
-        })
+        });
     });
 };
 
@@ -173,8 +173,7 @@ var addDBBackupSchedule = function(backupTime){
 app.listen(psoft_job_port);
 log.info("Predictsoft automated jobs service started on port: " + psoft_job_port);
 log.info("===================================");
+
 initLockScheduler();
 initDatabaseBackupScheduler();
-
-
 //backupPsoftDatabase();
