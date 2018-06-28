@@ -35,7 +35,7 @@
                                     </strong>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-6">
                                 <div class="panel panel-primary">
                                     <div class="panel-heading text-center team-name-panel-header"><span ng-class="{'locked-team-name':x.IsGameLocked}">{{x.Team1Name}}</span></div>
                                     <div id = 'divMatch{{x.MatchID}}_{{x.Team1ID}}' class="panel-body text-center team-logo-panel-container" ng-class="{'locked-panel':x.IsGameLocked}" ng-click="div_click(x.MatchID,x.Team1ID,x.Team1Name,x.Team2ID,x.IsGameLocked)">
@@ -43,16 +43,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--Disable for group of 16 onwards-->
-                           <div class="col-sm-4">
+                            <!--Disable for group of 16 onwards (remember to update div col size to "col-sm-4" for the other two team choices above and below)-->
+                           <!--<div class="col-sm-4">
                                 <div class="panel panel-primary">
                                     <div class="panel-heading text-center team-name-panel-header"><span ng-class="{'locked-team-name':x.IsGameLocked}">DRAW</span></div>
                                     <div id = 'divMatch{{x.MatchID}}_50' class="panel-body text-center team-logo-panel-container" ng-class="{'locked-panel':x.IsGameLocked}" ng-click="div_click(x.MatchID,x.Team1ID,'Draw',x.Team2ID,x.IsGameLocked)">
                                         <div class="row"><img ng-src="https://kidavalanche.files.wordpress.com/2010/02/p1010018.jpg" alt="DRAW" style="width:72px;height:42px;" /></div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-4">
+                            </div>-->
+                            <div class="col-sm-6">
                                 <div class="panel panel-primary">
                                     <div class="panel-heading text-center team-name-panel-header"><span ng-class="{'locked-team-name':x.IsGameLocked}">{{x.Team2Name}}</span></div>
                                     <div id = 'divMatch{{x.MatchID}}_{{x.Team2ID}}' class="panel-body text-center team-logo-panel-container" ng-class="{'locked-panel':x.IsGameLocked}" ng-click="div_click(x.MatchID, x.Team2ID,x.Team2Name,x.Team1ID,x.IsGameLocked)">
