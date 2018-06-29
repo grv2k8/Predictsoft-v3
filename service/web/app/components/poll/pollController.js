@@ -19,7 +19,7 @@ Controller that handles
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
 
-        $scope.msg_announcement = "Predictions from other players will be revealed 15 minutes before the match";
+        $scope.msg_announcement = '';
         $scope.display_announcement = true;            //TODO: move these to config/exports file
         $scope.playerFirstName = authService.getFirstName();
 
@@ -29,9 +29,10 @@ Controller that handles
 
         $scope.matchDate = '';
 
-        //$scope.matchDateTime = '';
+        $scope.matchDateTime = '';
         $scope.matchType = '';
         $scope.matchPoints = 0;
+
         var now = new Date();
 
         // $scope.lockDown = false;
@@ -68,7 +69,9 @@ Controller that handles
         };
 
         $scope.getRemainingPlayerCount = function(){
-            return gameService.getRemainingPredictionCount();
+            var totalPredictions = 0; //gameService.getRemainingPredictionCount(authService.getToken());
+            //console.log("????",totalPredictions);
+            return totalPredictions;
         }
 
 /*
@@ -131,16 +134,23 @@ Controller that handles
                 if ($scope.nogames) {
                     //no games marked as isActive=1 on the database
                     $scope.matchType = '';
+                    display_announcement = false;
                 }
                 else {
                     $scope.games = gamesObject.results.slice();		//copy games info to scope
                     $scope.matchDate = gamesObject.match_date;
                     //$scope.remainingPredictions = gamesObject.rem_predictions;
-                    gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
+                    //gameService.setRemainingPredictionCount(gamesObject.rem_predictions);
 
-                    //var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
-                    //$scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
+                    //var matchDateTime = new Date($scope.games[0].GameDate).getDate() + $scope.games[0].GameTime ;
+                    var matchDateTime = moment(moment($scope.games[0].GameDate,"MMDDYYYY") + " " + $scope.games[0].GameTime);
 
+                    
+
+                    //var targetDateMsec = new Date($scope.games[0].GameDate).getTime() -  15*60000;
+                    //$scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].GameDate).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
+
+                    //matchDateTime.setHours(new Date($scope.games[0].GameTime).getHours);
                     $scope.matchType = ($scope.games[0].GameType ) || '';
                     $scope.matchPoints =   $scope.games[0].GamePoints || 0;
                 }

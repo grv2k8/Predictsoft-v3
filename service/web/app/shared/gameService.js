@@ -22,9 +22,11 @@ angular.module("psoftUI").service("gameService", function ($http) {
         ]
     };
     
-    this.getRemainingPredictionCount = function(){
-        return rem_predictions;
+    this.getPredictionStats = function(auth_token){
+        //return rem_predictions;
+        return $http.get("/api/v1/games/prediction/stats?access_token="+auth_token);
     };
+    
 
     this.setRemainingPredictionCount = function(remP){
         rem_predictions = remP;

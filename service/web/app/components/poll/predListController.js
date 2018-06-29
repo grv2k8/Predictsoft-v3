@@ -12,6 +12,7 @@ Controller that retrieves prediction list for current match from submitted entri
         $scope.user_token = authService.getToken();
         $scope.predictionGrid = gameService.getPredictionGrid();
         $scope.predictionData = {};
+        $scope.predictionsRemaining = 0;
        /*$scope.predictionGrid = {
             enableColumnMenus: false,
             columnDefs: [
@@ -37,8 +38,16 @@ Controller that retrieves prediction list for current match from submitted entri
                 throw "There was an error trying to fetch prediction data from the web service. Please try again later";
             }
             $scope.predictionData = response.data.results;
-            gameService.setRemainingPredictionCount(response.data.rem_predictions);
+           //gameService.setRemainingPredictionCount(response.data.rem_predictions);
             gameService.fillPredictionGrid($scope.predictionData);      //for dynamically refreshing the prediction grid
+
+            //also fetch/refresh number of prediction(s) remaining
+            return gameService.getPredictionStats($scope.user_token);
+        })
+        .then(function(predictionStatsObject){
+            var predictionStats = predictionStatsObject.data.results[0];
+
+            $scope.predictionsRemaining = predictionStats.total_players - predictionStats.predictions_received;
         })
         .catch(function (err) {
             if(err.data && err.data.message === "Token Expired"){

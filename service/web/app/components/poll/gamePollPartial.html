@@ -8,8 +8,8 @@
                         <div class="h1 psoft-euro-emphasis-text">{{matchType}}</div>
                         <div class="h4"></div>
                     </div>
-                    <div ng-if="showDateRemaining(matchDateTime)" class="alert alert-warning fade in" ng-show="display_announcement">
-                         <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
+                    <div class="alert alert-warning fade in" ng-show="display_announcement">
+                         <span class="pull"><span class="h3">Hidden prediction mode </span>[Predictions from other players for each game will be revealed once the match has been locked]<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
                      </div>
                     <div class="alert alert-success" ng-show="showConfirmation">
                         <span>Thank you,{{playerFirstName}}! Your prediction(s) have been submitted.</span>
@@ -89,12 +89,11 @@
                                 <span class="psoft-euro-emphasis-text">Prediction list</span>
                                 <span ng-if="showDateRemaining(matchDateTime)" class="h5">
                                     (Time remaining: <timer end-time='matchDateTime'><span>{{days}} days </span>{{hhours}}:{{mminutes}}:{{sseconds}}</timer>)
-                                    <span class="h5" ng-if="predictionGridLoaded">/ {{getRemainingPlayerCount()}} predictions left </span>
                                 </span>
                             </div>
-                            <div class="row">
+                            <div class="row" style="padding: 0 0 20px 20px;">
                                 <div class="col-offset-sm-4"></div>
-                                <div class="col-sm-8" style="padding-left: 30px;">
+                                <div ng-if="true" class="col-sm-8">
                                     <select ng-model="pgSelectedGame" ng-change="filterPredictionList(pgSelectedGame)">
                                         <option value="" >All Matches</option>
                                         <option ng-repeat="x in games" value="{{x}}">
@@ -102,6 +101,7 @@
                                         </option>
                                     </select>
                                 </div>
+                                <div ng-if="true" class="col-sm-8"><mark>[{{predictionsRemaining}} prediction(s) remaining for the next upcoming match)]</mark></div>
                             </div>
                             <div ng-hide="predictionGridLoaded"><span class="h5"><img src="/web/assets/img/loading.gif" /> Refreshing...</span></div>
                             <div ng-show="predictionGridLoaded" ui-grid="predictionGrid"></div>
