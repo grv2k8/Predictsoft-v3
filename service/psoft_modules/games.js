@@ -197,6 +197,33 @@ var TFGames = {
             });
             res.end();
             return;
+        });
+    },
+
+    /* GET the total number of players and number of remaining predictions */
+    getPredictionStats: function(req,res){
+        database.query(
+            queries.getPredictionStats(),
+            database.DBConnection.QueryTypes.SELECT
+        )
+        .then(predStats=>{
+            
+            res.status(200).json({
+            success : true,
+            message : "OK",
+            results : predStats
+        });
+            res.end();
+            return;
+        })
+        .catch(err =>{
+            log.warn("Error trying to fetch number of predictions received. Details: ",err);
+        res.status(500).json({
+            success : false,
+            message : "Could not fetch number of predictions received"
+        });
+        res.end();
+        return;
         })
     }
 };

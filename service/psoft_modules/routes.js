@@ -32,7 +32,8 @@ router.get('/v1/game/:id',PSMatch.fetchMatchDetails);               //get detail
 router.get('/v1/games/next',PSMatch.fetchNextActiveMatch);
 
 //prediction route
-router.get('/v1/games/prediction',PSMatch.getPredictionsForActiveMatches)
+router.get('/v1/games/prediction',PSMatch.getPredictionsForActiveMatches);
+router.get('/v1/games/prediction/stats',PSMatch.getPredictionStats);
 router.post('/v1/games/predict',PSMatch.addOrUpdatePredictions);
 
 router.get('/v1/scores',PSMatch.getScoreboardList);
