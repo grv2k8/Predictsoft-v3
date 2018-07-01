@@ -28,7 +28,7 @@
 								<td><span class="highlight-team" ng-class="(x.predicted_team===x.winning_team) ? 'label label-success' : 'label label-warning'">{{x.predicted_team}}</span></td>
 								<td class="highlight-team">{{x.winning_team}}</td>
 	  							<!--<td>{{x.result}}</td>-->
-	  							<td>{{getDisplayPoints(x.predicted_team, x.winning_team)}}</td>
+	  							<td>{{getDisplayPoints(x.predicted_team, x.winning_team,x.game_weight)}}</td>
 								<!--<td>{{x.game_weight}}</td>-->
 	  						</tr>
 	  					</tbody>

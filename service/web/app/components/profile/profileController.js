@@ -56,13 +56,13 @@
                 })
         };
 
-        $scope.getDisplayPoints = function (predicted_team_id, winning_team_id)
+        $scope.getDisplayPoints = function (predicted_team_id, winning_team_id, game_weight)
         {
             if(winning_team_id === ""){
                 return "[TBD]"
             }
             else{
-                return (predicted_team_id == winning_team_id)? "3":"0";
+                return (predicted_team_id == winning_team_id)? game_weight:"0";
             }
         }
 
