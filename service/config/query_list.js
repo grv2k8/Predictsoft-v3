@@ -57,7 +57,10 @@ module.exports = {
                     "U.userID = P.playerID AND " + 
                     "P.playerID = " + userID
     },
-    getUserScores: function(userID){
+    getUserScores: function(){
+        return "SELECT u.userID, u.name, u.points as points FROM users u";
+    },
+    getUserScoresFixed: function(userID){
         return "SELECT u.userID, u.name, COUNT(*) * 3 as points " +
     "FROM predictions p, users u, teams t, games m " +
     "WHERE u.userid = p.playerID and "+
