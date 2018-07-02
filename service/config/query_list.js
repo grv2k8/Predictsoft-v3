@@ -61,15 +61,12 @@ module.exports = {
         return "SELECT u.userID, u.name, u.points as points FROM users u ORDER BY u.points DESC;";
     },
     getUserScoresFixed: function(userID){
-        return "SELECT u.userID, u.name, COUNT(*) * 3 as points " +
-    "FROM predictions p, users u, teams t, games m " +
-    "WHERE u.userid = p.playerID and "+
-        "t.ID = p.predictedTeamID and "+
-        "m.ID = p.matchID and "+
-        "(SELECT teams.Name FROM teams WHERE teams.ID = p.predictedTeamID) = (SELECT teams.Name FROM teams WHERE teams.ID = m.WinningTeamID) and " + 
-        "m.isActive=0 " +
-    "GROUP BY u.userid "+
-    "ORDER BY points DESC;";
+        return "SELECT u.userID, u.name, SUM(g.points) as points FROM games g, predictions p, users u " +
+        "WHERE g.ID = p.matchID  " +
+        "AND g.winningTeamID = p.predictedTeamID  " +
+        "AND p.playerID = u.userID " +
+        "GROUP BY u.userID " +
+        "ORDER BY points DESC"
     },
     getPredictionStats: function(){
         return "SELECT COUNT(*) as predictions_received, " +
