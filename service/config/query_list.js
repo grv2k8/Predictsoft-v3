@@ -57,10 +57,10 @@ module.exports = {
                     "U.userID = P.playerID AND " + 
                     "P.playerID = " + userID
     },
-    getUserScores: function(){
+    getUserScoresFromUserTable: function(){
         return "SELECT u.userID, u.name, u.points as points FROM users u ORDER BY u.points DESC;";
     },
-    getUserScoresFixed: function(userID){
+    getUserScores: function(userID){
         return "SELECT u.userID, u.name, SUM(g.points) as points FROM games g, predictions p, users u " +
         "WHERE g.ID = p.matchID  " +
         "AND g.winningTeamID = p.predictedTeamID  " +
